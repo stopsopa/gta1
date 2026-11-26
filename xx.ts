@@ -70,6 +70,18 @@ export default (setup: Commands, ctx: Ctx): Commands => {
 __GTA_ARG="\${1}"
 __GTA_OK="0"
 if [ -z "\${__GTA_ARG}" ]; then
+  cat <<EEE
+
+  Speed is used ONLY by the Windows builds (Wine + cnc-ddraw):
+    win gta1 800x600+
+    win london69 800x600+
+    win gta1 window 800x600+
+    win london69 window 800x600+
+
+  NOT affected (they ignore GTA_SPEED):
+    max wine menu
+    dos ...   (all DOSBox commands: 24bit, 8bit, 3dfx)
+EEE
   # arrow-key menu, runs in its own bash process and prints the chosen value
   __GTA_ARG="\$(/bin/bash _menu.sh "Game speed of the Windows builds  (now: GTA_SPEED=>\${GTA_SPEED}<)" "\${GTA_SPEED}" \\
     "default::default - STANDARD: the game keeps its own timing (what cnc-ddraw ships for GTA)" \\
