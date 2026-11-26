@@ -361,7 +361,7 @@ set -e
 set -e
 /bin/bash install/install.sh
 `,
-      description: `install Rosetta, DOSBox Staging and Wine (skips what is present), needs Homebrew  [install/install.sh]`,
+      description: `install Homebrew, Rosetta, DOSBox Staging and Wine (skips what is present)  [install/install.sh]`,
     },
     [`pack`]: {
       command: `

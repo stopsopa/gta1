@@ -118,7 +118,7 @@ On this machine:
   Wine     : ${RED}MISSING${RESET}
 
 ${YELLOW}Easiest way - one command installs everything that is missing
-(Rosetta 2, DOSBox Staging, Wine), needs Homebrew:${RESET}
+(Homebrew, Rosetta 2, DOSBox Staging, Wine):${RESET}
 
   /bin/bash "${_DIR}/install.sh"        (the same as: xx install)
 

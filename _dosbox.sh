@@ -82,6 +82,8 @@ if [[ -z "${DOSBOX_BIN}" ]]; then
   for CANDIDATE in \
     "$(command -v dosbox)" \
     "$(command -v dosbox-staging)" \
+    "/opt/homebrew/bin/dosbox" \
+    "/usr/local/bin/dosbox" \
     "/Applications/DOSBox Staging.app/Contents/MacOS/dosbox" \
     "$(command -v dosbox-x)" \
     "/Applications/dosbox-x.app/Contents/MacOS/dosbox-x"

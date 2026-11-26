@@ -1,13 +1,13 @@
 
 #
 # Installs everything the launchers in this directory need (on this Mac):
+#   - Homebrew         (first, DOSBox Staging comes from it) - its official
+#                      installer, asks for the macOS password. Also found
+#                      when installed but not in PATH yet.
 #   - Rosetta 2        (Wine and the Windows builds of GTA are Intel code)
 #   - DOSBox Staging   (dos-*.sh launchers)       brew formula dosbox-staging
 #   - Wine             (win-*.sh, max-wine-*.sh)  wine_install.sh (direct download,
 #                      the brew cask wine-stable is disabled since 2026-09-01)
-#
-# Needs Homebrew (https://brew.sh) - it is the only thing this script does not
-# install itself, it prints the command for it instead.
 #
 # Safe to run again - things already installed are skipped.
 #
@@ -45,33 +45,66 @@ GREEN=$'\033[32m'
 YELLOW=$'\033[33m'
 RESET=$'\033[0m'
 
-# brew can be installed but not in PATH yet (fresh machine, brew shellenv not
-# added to the shell profile) - then use it from its standard location
-if [[ -z "$(command -v brew)" ]]; then
+# ---- Homebrew --------------------------------------------------------------
+
+# 1 = brew was not in PATH when this script started (reminder printed at the end)
+BREW_NOT_IN_PATH="0"
+BREW_URL="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
+
+# brew can be installed but not in PATH (fresh machine, brew shellenv not added
+# to the shell profile) - then load it from its standard location
+function brew_load {
+  if [[ -n "$(command -v brew)" ]]; then
+    return 0
+  fi
   for CANDIDATE in "/opt/homebrew/bin/brew" "/usr/local/bin/brew"; do
     if [[ -x "${CANDIDATE}" ]]; then
       eval "$("${CANDIDATE}" shellenv)"
-      break
+      BREW_NOT_IN_PATH="1"
+      return 0
     fi
   done
-fi
+  return 1
+}
 
-if [[ -z "$(command -v brew)" ]]; then
+if brew_load; then
+  echo "${GREEN}ok${RESET}       Homebrew ($(command -v brew))"
+else
   cat <<EEE
 
-${0} error: Homebrew (brew) not found in PATH and not in /opt/homebrew/bin, /usr/local/bin
+${YELLOW}install${RESET}  Homebrew (https://brew.sh) - its official installer, it will ask
+         for your macOS password and for Enter to confirm
 
-Install it first (https://brew.sh):
+EEE
+  TMP_BREW="$(mktemp -d)"
+  curl -fsSL -o "${TMP_BREW}/install.sh" "${BREW_URL}"
+  CODE="${?}"
+  if [[ "${CODE}" != "0" ]]; then
+    rm -rf "${TMP_BREW}"
+    echo "${0} error: downloading the Homebrew installer failed CODE=>${CODE}< BREW_URL=>${BREW_URL}<, check the internet connection"
+    exit 1
+  fi
+  /bin/bash "${TMP_BREW}/install.sh"
+  CODE="${?}"
+  rm -rf "${TMP_BREW}"
+  if [[ "${CODE}" != "0" ]] || ! brew_load; then
+    cat <<EEE
 
-  /bin/bash -c "\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+${0} error: installing Homebrew failed CODE=>${CODE}< (brew not found in /opt/homebrew/bin, /usr/local/bin)
 
-then open a NEW terminal (or do what the installer prints under "Next steps")
+Install it by hand (https://brew.sh):
+
+  /bin/bash -c "\$(curl -fsSL ${BREW_URL})"
+
 and run this again:
 
   /bin/bash "${_DIR}/install.sh"
 
 EEE
-  exit 1
+    exit 1
+  fi
+  BREW_NOT_IN_PATH="1"
+  echo "${GREEN}ok${RESET}       Homebrew installed ($(command -v brew))"
 fi
 
 # ---- Rosetta 2 (Apple silicon only) ---------------------------------------
@@ -130,3 +163,13 @@ ${GREEN}all installed${RESET} - launchers:
 $(cd "${_DIR}/.." && ls dos-*.sh win-*.sh max-wine-*.sh 2>/dev/null | sed 's/^/  \/bin\/bash /')
 
 EEE
+
+if [[ "${BREW_NOT_IN_PATH}" == "1" ]]; then
+  cat <<EEE
+${YELLOW}Homebrew is not in PATH of your terminal${RESET} - the launchers here work without
+it, but to use "brew" yourself add it once to your shell profile and open a new terminal:
+
+  echo 'eval "\$($(command -v brew) shellenv)"' >> ~/.zprofile
+
+EEE
+fi
