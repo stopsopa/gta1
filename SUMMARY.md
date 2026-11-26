@@ -43,7 +43,10 @@ Nothing in this directory depends on ReRun being installed.
 - `gta-max`, `gta-classic` - the two game folders. They started as symlinks made by a `link.sh`
   script; that script was removed, the folders are meant to be real directories here.
 - `install.sh` - installs Rosetta 2, DOSBox Staging (`brew install dosbox-staging`) and Wine
-  (`brew install --cask wine-stable`), skipping what is already present.
+  (`_wine_install.sh`), skipping what is already present.
+- `_wine_install.sh` - installs Wine without brew: Homebrew disabled the cask `wine-stable` on
+  2026-09-01 (unsigned build, fails Gatekeeper). Downloads the same 11.0_1 build the cask pointed
+  to, checks sha256, unpacks `Wine Stable.app` to `/Applications`.
   Needs Homebrew, prints how to install it when it is missing.
 - `_wine_find.sh` - finds the Wine binary for the launchers and for `install.sh`; when Wine is
   missing it prints what exactly is missing on the machine and how to install it.

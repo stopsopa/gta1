@@ -14,8 +14,10 @@
 # Search order:
 #   1. env var WINE_BIN (when set, nothing else is tried)
 #   2. wine in PATH
-#   3. places where Homebrew puts it - a fresh machine often has Wine installed
-#      but no Homebrew in PATH yet (brew shellenv not added to the shell profile)
+#   3. places where Homebrew used to put it (machines that installed it before
+#      the cask was disabled)
+#   4. "Wine Stable.app" in /Applications and ~/Applications - where
+#      _wine_install.sh puts it (it creates no symlink in PATH)
 #
 
 _SHELL="$(ps -p $$ -o comm=)"; # bash || sh || zsh
@@ -60,7 +62,8 @@ else
     "$(command -v wine)" \
     "/opt/homebrew/bin/wine" \
     "/usr/local/bin/wine" \
-    "/Applications/Wine Stable.app/Contents/Resources/wine/bin/wine"
+    "/Applications/Wine Stable.app/Contents/Resources/wine/bin/wine" \
+    "${HOME}/Applications/Wine Stable.app/Contents/Resources/wine/bin/wine"
   do
     if [[ -n "${CANDIDATE}" && -x "${CANDIDATE}" ]]; then
       FOUND="${CANDIDATE}"
@@ -128,11 +131,14 @@ By hand, in this order (skip what is marked "found" above):
   2. Rosetta 2 - Apple silicon only, Wine is Intel code
        softwareupdate --install-rosetta --agree-to-license
 
-  3. Wine
-       brew install --cask wine-stable
+  3. Wine - NOT with brew: "brew install --cask wine-stable" fails, Homebrew
+     disabled that cask on 2026-09-01 (build not signed, fails Gatekeeper).
+     This downloads the same build straight from its source, checks the
+     sha256 and puts "Wine Stable.app" in /Applications:
+       /bin/bash "${_DIR}/_wine_install.sh"
 
-  4. check, it should print a version:
-       wine --version
+  4. check, it should print the path of wine:
+       /bin/bash "${_DIR}/_wine_find.sh"
 
 If macOS refuses to open Wine ("cannot be opened" / "unverified developer"):
 System Settings -> Privacy & Security -> "Open Anyway", then run the launcher again.

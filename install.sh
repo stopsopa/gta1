@@ -3,7 +3,8 @@
 # Installs everything the launchers in this directory need (on this Mac):
 #   - Rosetta 2        (Wine and the Windows builds of GTA are Intel code)
 #   - DOSBox Staging   (dos-*.sh launchers)       brew formula dosbox-staging
-#   - Wine             (win-*.sh, max-wine-*.sh)  brew cask wine-stable
+#   - Wine             (win-*.sh, max-wine-*.sh)  _wine_install.sh (direct download,
+#                      the brew cask wine-stable is disabled since 2026-09-01)
 #
 # Needs Homebrew (https://brew.sh) - it is the only thing this script does not
 # install itself, it prints the command for it instead.
@@ -111,10 +112,11 @@ if [[ -n "${WINE_FOUND}" ]]; then
   echo "${GREEN}ok${RESET}       Wine (${WINE_FOUND})"
 else
   echo "${YELLOW}install${RESET}  Wine"
-  brew install --cask wine-stable
+  # not with brew: cask wine-stable is disabled since 2026-09-01, see _wine_install.sh
+  /bin/bash "${_DIR}/_wine_install.sh"
   CODE="${?}"
   if [[ "${CODE}" != "0" ]]; then
-    echo "${0} error: brew install --cask wine-stable failed CODE=>${CODE}<"
+    echo "${0} error: _wine_install.sh failed CODE=>${CODE}<"
     exit 1
   fi
   # prints the full instructions and stops when it is still not there

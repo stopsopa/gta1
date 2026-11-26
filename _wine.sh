@@ -15,7 +15,7 @@
 # Without --window the mode comes from env var GTA_DISPLAY (window | fullscreen,
 # set with "xx display"), and is full screen when that is not set either.
 #
-# Needs Wine (xx install, or by hand: brew install --cask wine-stable). It is
+# Needs Wine (xx install, or only Wine: /bin/bash _wine_install.sh). It is
 # searched by _wine_find.sh, other binary can be forced with env var WINE_BIN.
 #
 # What it does before starting the game:
