@@ -618,8 +618,8 @@ WINE REGISTRY Version 2
 "Brother_HL_L2350DW_series"="wineps.drv,CUPS:Brother_HL_L2350DW_series"
 "Brother_HL_L8240CDW_series"="wineps.drv,CUPS:Brother_HL_L8240CDW_series"
 
-[Software\\Microsoft\\Windows NT\\CurrentVersion\\Drivers32] 1795652681
-#time=1dd7d3c87ae798a
+[Software\\Microsoft\\Windows NT\\CurrentVersion\\Drivers32] 1795663232
+#time=1dd7d5518716c6c
 
 [Software\\Microsoft\\Windows NT\\CurrentVersion\\PrinterPorts] 1795648917
 #time=1dd7d33c3b4b6f0
@@ -736,13 +736,13 @@ WINE REGISTRY Version 2
 "OpenWithIcon"="2905_wscript.0"
 "ProgID"="VBSFile"
 
-[Software\\Wine\\Fonts] 1795652650
-#time=1dd7d3c750bd28c
+[Software\\Wine\\Fonts] 1795662677
+#time=1dd7d53cd44f21e
 "Codepages"="1252,437"
 "LogPixels"=dword:00000060
 
-[Software\\Wine\\Fonts\\External Fonts] 1795652650
-#time=1dd7d3c750d25a6
+[Software\\Wine\\Fonts\\External Fonts] 1795662677
+#time=1dd7d53cd4657b2
 "@Apple SD Gothic Neo Regular (TrueType)"="Z:\\System\\Library\\Fonts\\AppleSDGothicNeo.ttc"
 "@Arial Unicode MS (TrueType)"="Z:\\System\\Library\\Fonts\\Supplemental\\Arial Unicode.ttf"
 "@Brush Script MT Italic (TrueType)"="Z:\\System\\Library\\Fonts\\Supplemental\\Brush Script.ttf"

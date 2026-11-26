@@ -319,14 +319,14 @@ set -e
 set -e
 /bin/bash pack.sh pack
 `,
-      description: `Run before git add / commit. Files bigger than CHUNK from .env (the CD images) are chopped into [file].001 [file].002 ... next to them, added to .gitignore (once) and removed. Can be repeated  [pack.sh pack]`,
+      description: `Run before git add / commit. Files bigger than CHUNK from .env (the CD images) are chopped into [file].001 [file].002 ... next to them, added to .gitignore (once) and removed. Chunks already there and the same: only the file is removed. Can be repeated  [pack.sh pack]`,
     },
     [`unpack`]: {
       command: `
 set -e
-/bin/bash pack.sh unpack
+/bin/bash pack.sh unpack "\${@}"
 `,
-      description: `Run after git clone / pull, before playing. Glues [file].001 [file].002 ... back into [file] and removes the chunks. While unpacked git sees the chunks as deleted: xx pack before the next commit  [pack.sh unpack]`,
+      description: `Run after git clone / pull, before playing. Glues [file].001 [file].002 ... back into [file], the chunks stay. Arg: --delete removes the chunks (git then sees them as deleted: xx pack before the next commit)  [pack.sh unpack]`,
     },
     help: {
       command: `

@@ -7,12 +7,14 @@
 #            the .git directory is skipped), adds each of them to .gitignore (once),
 #            writes chunks [file].001 [file].002 ... next to the file and removes
 #            the file. After pack there are only chunks.
-#   unpack - finds every [file].001, glues [file].001 [file].002 ... back into [file]
-#            and removes the chunks. After unpack there are only the original files.
+#   unpack - finds every [file].001 and glues [file].001 [file].002 ... back into [file].
+#            The chunks stay (git status stays clean: the chunks are there and the
+#            files are in .gitignore). With --delete the chunks are removed.
 #
 # Usage (from any directory):
 #   /bin/bash pack.sh pack
 #   /bin/bash pack.sh unpack
+#   /bin/bash pack.sh unpack --delete
 #
 # .env:
 #   CHUNK=45mb      # units: b, kb, mb, gb (1kb = 1024b), no unit means bytes
@@ -23,18 +25,25 @@
 #     just happens to be called something.001 is reported and left alone
 #   - every chunk but the last has to have the size of .001, the last can't be bigger
 #     and there can't be a chunk with a number after a gap (a missing chunk in the middle)
-#   - [file] can't exist next to its chunks
 #   If any of this is not true for a group, the group is not touched and the script
 #   ends with an error after processing the other groups.
 #   What can NOT be detected: lost last chunk(s) - the remaining ones still look like
 #   a complete group. git will not lose a file on its own, so it is accepted.
+#
+# When [file] and its chunks both exist (the state after unpack without --delete):
+#   pack   - chunks are the same as the file: only the file is removed.
+#            Not the same: the file wins, its chunks are written again
+#            (pack is "file -> chunks", old chunks are in git anyway).
+#   unpack - chunks are the same as the file: nothing to glue (--delete still removes
+#            the chunks). Not the same: error, nothing is touched - remove the one
+#            which is wrong.
 #
 # Both commands can be repeated: pack doesn't see chunks as big files (a chunk is not
 # bigger than CHUNK), unpack with no chunks does nothing.
 # Each command checks its result (size and cksum for pack, size for unpack) before
 # it removes anything.
 #
-# WARNING: while unpacked, git sees the chunks as deleted. Run pack before git add / commit.
+# WARNING: after unpack --delete git sees the chunks as deleted. Run pack before git add / commit.
 # Changing CHUNK is fine while packed (unpack doesn't read it), new value is used by next pack.
 #
 
@@ -73,7 +82,8 @@ function usage {
 
 Usage:
   /bin/bash ${_SCRIPT} pack      # big files -> chunks [file].001 [file].002 ... (files removed)
-  /bin/bash ${_SCRIPT} unpack    # chunks -> files (chunks removed)
+  /bin/bash ${_SCRIPT} unpack    # chunks -> files (chunks stay)
+  /bin/bash ${_SCRIPT} unpack --delete    # chunks -> files (chunks removed)
 
 Size of the chunk: CHUNK in ${ENV_FILE} (e.g. CHUNK=45mb)
 
@@ -95,6 +105,20 @@ function cat_chunks {
     cat "$(chunk_name "${1}" "${I}")" || return 1
     I="$((I + 1))"
   done
+}
+
+# prints how many chunks ${1} has, counting from .001 as long as the next number exists
+function count_chunks {
+  local COUNT="0"
+  while [[ -f "$(chunk_name "${1}" "$((COUNT + 1))")" ]]; do
+    COUNT="$((COUNT + 1))"
+  done
+  echo "${COUNT}"
+}
+
+# prints how many files look like a chunk of ${1}, gaps in numbering or not
+function count_chunk_files {
+  ls "${1}".[0-9][0-9][0-9] 2> /dev/null | wc -l | tr -d '[:space:]'
 }
 
 function remove_chunks {
@@ -162,11 +186,20 @@ function pack_file {
     return 1
   fi
 
-  local EXISTING="$(ls "${FILE}".[0-9][0-9][0-9] 2> /dev/null | head -n 1)"
+  local OLD_FILES="$(count_chunk_files "${FILE}")"
 
-  if [[ -n "${EXISTING}" ]]; then
-    echo "${0} error: FILE=>${FILE}< exists together with a chunk EXISTING=>${EXISTING}<, can't tell which one is current, remove one of them"
-    return 1
+  if [[ "${OLD_FILES}" != "0" ]]; then
+    # the state after unpack without --delete: the file and its chunks
+    local OLD_COUNT="$(count_chunks "${FILE}")"
+
+    if [[ "${OLD_COUNT}" = "${OLD_FILES}" && "$(cat_chunks "${FILE}" "${OLD_COUNT}" | cksum)" = "$(cksum < "${FILE}")" ]]; then
+      echo "  ${FILE} (${SIZE} bytes): its ${OLD_COUNT} chunks are already there and the same, removing the file"
+      rm "${FILE}"
+      return "${?}"
+    fi
+
+    echo "  ${FILE}: existing chunks are not the same as the file, writing them again"
+    rm -f "${FILE}".[0-9][0-9][0-9]
   fi
 
   echo "  ${FILE} (${SIZE} bytes) -> ${COUNT} chunks"
@@ -230,23 +263,14 @@ function pack {
 
 function unpack_file {
   local FILE="${1}"
-
-  if [[ -e "${FILE}" ]]; then
-    echo "${0} error: FILE=>${FILE}< exists together with its chunks, can't tell which one is current, remove one of them"
-    return 1
-  fi
-
-  local COUNT="1"
-  while [[ -f "$(chunk_name "${FILE}" "$((COUNT + 1))")" ]]; do
-    COUNT="$((COUNT + 1))"
-  done
+  local COUNT="$(count_chunks "${FILE}")"
 
   if [[ "${COUNT}" -lt "2" ]]; then
     echo "${0} error: FILE=>${FILE}.001< has no ${FILE}.002: not chunks made by pack, or the rest is lost. Left alone"
     return 1
   fi
 
-  local FOUND="$(ls "${FILE}".[0-9][0-9][0-9] | wc -l | tr -d '[:space:]')"
+  local FOUND="$(count_chunk_files "${FILE}")"
 
   if [[ "${FOUND}" != "${COUNT}" ]]; then
     echo "${0} error: chunks of FILE=>${FILE}< are numbered 001..$(printf '%03d' "${COUNT}") but there are ${FOUND} of them, a chunk in the middle is missing. Left alone"
@@ -267,19 +291,30 @@ function unpack_file {
     I="$((I + 1))"
   done
 
-  echo "  ${COUNT} chunks -> ${FILE} (${TOTAL} bytes)"
+  if [[ -e "${FILE}" ]]; then
+    if [[ "$(size_of "${FILE}")" != "${TOTAL}" || "$(cat_chunks "${FILE}" "${COUNT}" | cksum)" != "$(cksum < "${FILE}")" ]]; then
+      echo "${0} error: FILE=>${FILE}< exists and is not the same as its ${COUNT} chunks glued together, can't tell which one is current, remove the wrong one. Nothing touched"
+      return 1
+    fi
+    echo "  ${FILE} (${TOTAL} bytes) is already there and the same as its ${COUNT} chunks"
+  else
+    echo "  ${COUNT} chunks -> ${FILE} (${TOTAL} bytes)"
 
-  local TMP="${FILE}.unpack.tmp"
+    local TMP="${FILE}.unpack.tmp"
 
-  if ! cat_chunks "${FILE}" "${COUNT}" > "${TMP}" || [[ "$(size_of "${TMP}")" != "${TOTAL}" ]]; then
-    rm -f "${TMP}"
-    echo "${0} error: gluing chunks of FILE=>${FILE}< failed, chunks are untouched"
-    return 1
+    if ! cat_chunks "${FILE}" "${COUNT}" > "${TMP}" || [[ "$(size_of "${TMP}")" != "${TOTAL}" ]]; then
+      rm -f "${TMP}"
+      echo "${0} error: gluing chunks of FILE=>${FILE}< failed, chunks are untouched"
+      return 1
+    fi
+
+    mv "${TMP}" "${FILE}" || return 1
   fi
 
-  mv "${TMP}" "${FILE}" || return 1
-
-  remove_chunks "${FILE}" "${COUNT}"
+  if [[ "${DELETE}" = "1" ]]; then
+    remove_chunks "${FILE}" "${COUNT}"
+    echo "    ${COUNT} chunks removed"
+  fi
 }
 
 function unpack {
@@ -292,7 +327,11 @@ function unpack {
     return 0
   fi
 
-  echo "unpack:"
+  if [[ "${DELETE}" = "1" ]]; then
+    echo "unpack: (--delete: chunks will be removed)"
+  else
+    echo "unpack: (chunks stay, add --delete to remove them)"
+  fi
 
   local FIRST_CHUNK=""
   local FAILED="0"
@@ -316,6 +355,16 @@ case "${1}" in
     pack
     ;;
   unpack)
+    DELETE="0"
+    case "${2}" in
+      "") ;;
+      --delete) DELETE="1" ;;
+      *)
+        usage
+        echo "${0} error: unknown option of unpack =>${2}<, the only one is --delete"
+        exit 1
+        ;;
+    esac
     unpack
     ;;
   *)
