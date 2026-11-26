@@ -1,0 +1,1612 @@
+ ▐▛███▛█   Claude Code v2.1.332
+▝▜██████▀  Fable 5.2 · Claude Ultra
+ ▝▝   ▝▝   ~/Workspace/__claude/gta1_rerun
+
+
+❯ look into '/Users/szdz/Workspace/__claude/gta1_rerun/gta-max' directory and   
+  '/Users/szdz/Workspace/__claude/.gitignore'                                   
+                                                                                
+  we have to update '/Users/szdz/Workspace/__claude/.gitignore' to keep only    
+  non binary files from '/Users/szdz/Workspace/__claude/gta1_rerun/gta-max'     
+  only configs                                                                  
+
+  Ran 5 shell commands (ctrl+o to expand)
+
+⏺ I updated /Users/szdz/Workspace/__claude/.gitignore, but it won't take effect
+  yet: gta1_rerun/gta-max is a symlink to /Users/szdz/Workspace/games/GTA1-MAX 
+  (1), and git never looks inside symlinks. As it stands git would commit only
+  the link itself, and none of the 519 files behind it.
+
+  The rules ignore everything under gta1_rerun/gta-max except *.ini,
+  *.ini.backup, *.conf and *.con (any letter case):
+
+  gitignore
+  # gta1_rerun/gta-max: ignore everything (game binaries/assets), keep only
+  config files
+  gta1_rerun/gta-max/**
+  !gta1_rerun/gta-max/**/
+  !gta1_rerun/gta-max/**/*.[iI][nN][iI]
+  !gta1_rerun/gta-max/**/*.[iI][nN][iI].backup
+  !gta1_rerun/gta-max/**/*.[cC][oO][nN][fF]
+  !gta1_rerun/gta-max/**/*.[cC][oO][nN]
+
+  I tested them on a mock copy of the tree with a real directory in place of the
+  symlink. These 11 files would be tracked:
+
+  - dosbox.conf, ddraw.ini, ddraw.ini.backup
+  - cnc-ddraw/cnc-ddraw/ddraw.ini
+  - GTADOS/DIG.INI, GTADOS/DEFAULT.CON, GTADOS/DIRECT3D.CON
+  - GTADATA/MISSION.INI, GTADATA/UK/MISSUK.INI, GTADATA/UK/misse8.ini,
+    GTADATA/UK/missuke.ini
+
+  Two things about that list:
+
+  - Mission files: the four GTADATA .ini files are mission scripts (up to 1.2
+    MB) rather than settings. They match by extension; say if you want them
+    excluded.
+  - Other text files left out: ttt.sh, the .glsl shaders, the two CDAUDIO.DAT
+    track lists, the readmes and the logs are all ignored, since you said only
+    configs.
+
+  I matched by extension because many of the game's .RAW, .RAT and .FON assets
+  pass a text-detection check despite being binary data.
+
+  To make the rules apply, the game folder has to be a real directory inside the
+  repo (move or copy it in place of the symlink), or the repo has to live in
+  the game folder itself. I didn't touch the symlink — tell me which way you
+  want it and I'll do it.
+
+✻ Baked for 46s · done Wednesday 10:43 PM
+
+❯ update '/Users/szdz/Workspace/__claude/gta1_rerun/link.sh' and bring _DIR     
+  from bash scripting skill                                                     
+
+⏺ Skill(bash-scripting)
+  ⎿  Loaded skill
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Write(link.sh)
+  ⎿  Added 34 lines, removed 1 line
+       1 
+       2 +#                                                              
+       3 +# Links the GTA1-MAX game directory into this directory as "gta
+         +-max"                                                          
+       4 +# (next to this script, no matter where the script is called fr
+         +om).                                                           
+       5 +#                                                              
+       6 +# Usage (from any directory):                                  
+       7 +#   /bin/bash gta1_rerun/link.sh                               
+       8 +#                                                              
+       9 
+       3 -ln -h "/Users/szdz/Workspace/games/GTA1-MAX (1)" "${_DIR}/gta-m
+         -ax"                                                            
+         \ No newline at end of file
+      10 +_SHELL="$(ps -p $$ -o comm=)"; # bash || sh || zsh             
+      11 +_SHELL="$(basename ${_SHELL//-/})"                             
+      12 +case ${_SHELL} in                                              
+      13 +  zsh)                                                         
+      14 +    _DIR="$( cd "$( dirname "${(%):-%x}" )" && pwd -P )"       
+      15 +    _0="$( basename "${(%):-%N}" )"                            
+      16 +    _SCRIPT="${(%):-%N}"                                       
+      17 +    _BINARY="/bin/zsh"                                         
+      18 +    ;;                                                         
+      19 +  sh)                                                          
+      20 +    # be carefull this will not work when sourcing this file in
+         + sh shell                                                      
+      21 +    # will though work when called /bin/sh my_script.sh from an
+         +y shell                                                        
+      22 +    _DIR="$( cd "$( dirname "${0}" )" && pwd -P )"             
+      23 +    _0="$( basename "${0}" )"                                  
+      24 +    _SCRIPT="${0}"                                             
+      25 +    _BINARY="/bin/sh"                                          
+      26 +    ;;                                                         
+      27 +  *)                                                           
+      28 +    _DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
+      29 +    _0="$( basename "${BASH_SOURCE[0]}" )"                     
+      30 +    _SCRIPT="${BASH_SOURCE[0]}"                                
+      31 +    _BINARY="/bin/bash"                                        
+      32 +    ;;                                                         
+      33 +esac                                                           
+      34 +_PWD="$(pwd)"                                                  
+      35 +                                                               
+      36 +ln -h "/Users/szdz/Workspace/games/GTA1-MAX (1)" "${_DIR}/gta-m
+         +ax"                                                            
+
+⏺ /Users/szdz/Workspace/__claude/gta1_rerun/link.sh now has the full Version A
+  block from the skill above your ln line, plus a short overview comment. I
+  haven't run it.
+
+  Your ln -h ... line is unchanged, and it will fail as written. Without -s it
+  tries to make a hard link, and macOS refuses hard links to directories (ln: 
+  ...: Is a directory). On macOS -h only means "don't follow the target if it is
+  already a symlink".
+
+  - If you want a symlink (what exists there now), the line should be ln -s (or
+    ln -shf to replace the existing one). Git still won't see the files behind
+    it, so the .gitignore rules stay inactive.
+  - If you want git to track the configs, a link of either kind won't do it. The
+    game directory has to really live at gta1_rerun/gta-max (move or copy it).
+
+  Tell me which one you want and I'll change the line.
+
+✻ Churned for 18s · done Wednesday 10:45 PM
+
+※ recap: Goal: track only config files from gta-max in git; the .gitignore rules are written and link.sh now has the _DIR block. Next, decide whether gta-max stays a symlink or becomes a real directory, since git ignores symlinked contents. (turn off recaps in /config)
+
+❯ ~/Workspace/__claude/gta1_rerun szdz √ /bin/bash link.sh                      
+  ln: /Users/szdz/Workspace/games/GTA1-MAX (1): Is a directory                  
+  ~/Workspace/__claude/gta1_rerun szdz 1                                        
+
+⏺ That's the hard-link failure: macOS won't hard-link a directory, so the line
+  needs -s.
+
+⏺ Update(link.sh)
+  ⎿  Added 1 line, removed 1 line
+      35 
+      36  cd "${_DIR}"
+      37 
+      38 -ln -h "/Users/szdz/Workspace/games/GTA1-MAX (1)" "${_DIR}/gta-m
+         -ax"                                                            
+      38 +ln -shf "/Users/szdz/Workspace/games/GTA1-MAX (1)" "${_DIR}/gta
+         +-max"                                                          
+      39 
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ link.sh now works: I changed the line to ln -shf, ran it, and it exits 0 with
+  gta-max pointing at /Users/szdz/Workspace/games/GTA1-MAX (1). The -f makes it
+  safe to re-run, since it replaces the existing link instead of failing.
+
+  This is a symlink, so git still tracks only the link itself and the .gitignore
+  config rules stay inactive.
+
+  If you want the configs in git, the way to get both is to reverse the
+  direction: move the game folder to gta1_rerun/gta-max as a real directory and
+  symlink the old games/GTA1-MAX (1) path back to it. Say the word and I'll do
+  the move and rewrite link.sh accordingly.
+
+✻ Sautéed for 15s · done Wednesday 10:52 PM
+
+※ recap: Goal is tracking only the GTA1-MAX config files in git; the .gitignore rules are written and link.sh now creates a working symlink, but git ignores symlinked contents. Next: decide whether I move the game folder into the repo. (turn off recaps in /config)
+
+❯ I would like you to work on finding proper config to make                     
+  '/Users/szdz/Workspace/__claude/gta1_rerun/gta-max/Grand Theft Auto.exe' work 
+  well with rerun software                                                      
+  ReRun                                                                         
+  Classic Windows games on Apple silicon                                        
+  Version 0.1.14 (3)                                                            
+  Old favorites, one click away                                                 
+  ReRun downloads Wine, the graphics and video components each game needs, and  
+  the Steam client into a folder it manages. Install your game as usual and     
+  press Play - no bottles, wrappers or terminal.                                
+  It runs Resident Evil HD Remaster, the original 1996 Resident Evil, GTA and   
+  GTA2, patching copies of their files so they play full screen on your Mac.    
+  Your own game files stay untouched.                                           
+  Made by Rafael Bertholdo                                                      
+  I'm a software engineer and guitarist, and the independent developer behind   
+  ReRun, Guesthouse, Studio Camera, and its audio effects. ReRun is free and    
+  distributed by me outside the App Store - if it brought a game back for you,  
+  you can buy me a coffee.                                                      
+  More about me                                                                 
+  Buy me a coffee                                                               
+  Scan the code with your phone, or open the page.                              
+  buymeacoffee.com/rafabertholdo                                                
+
+  Ran 6 shell commands (ctrl+o to expand)
+
+⏺ web-fetch(Fetch ReRun GTA guide)
+  ⎿  Received 148 bytes
+
+› Message from web-fetch
+  Sources read (both HTTP 200, no 404 fallback needed):
+  - https://studiocamera.app/guides/gta-on-mac/ (main source; "Last updated 6
+  November 2026")
+  - https://studiocamera.app/rerun/ (ReRun product page; only used for context)
+
+  Both pages were fetched from a non-preapproved source, so quotes are kept
+  short and everything else is paraphrased. Note the guide and product page do
+  not mention cnc-ddraw ini keys, CD audio, controls, or a language picker
+  beyond English.
+
+  1. Version and layout
+
+  - Supported version: the 1997 Windows version of GTA, not the DOS version. The
+  guide says ReRun "plays the Windows version... started by GTAWIN.EXE... The
+  DOS version in the same box isn't used."
+  - Required layout (from the guide's tree):
+    GTA/
+      GTAWIN/ (GTAWIN.EXE, MSS32.DLL, SMACKW32.DLL)
+      GTADATA/ (STYLE001.G24, player_a.dat, ...)
+    The two folders must sit side by side. The game reads data from
+  "..\GTADATA".
+  - Rockstar Classics free release: works with ReRun 0.1.14 or later. It uses
+  "WINO\Grand Theft Auto.exe" instead of GTAWIN\GTAWIN.EXE, and the guide says
+  it "needs no renaming or patching."
+  - Minimum ReRun version for GTA: 0.1.5 ("This game needs ReRun 0.1.5 or
+  later").
+  - Requirements: Apple silicon, macOS 26 or later, about 1 GB free for Wine.
+
+  2. Setup steps and settings
+
+  Once, for any game:
+  - Install Rosetta 2: `softwareupdate --install-rosetta --agree-to-license`
+  - Install ReRun: download `ReRun-<version>-macOS.zip` from GitHub Releases,
+  move ReRun.app to /Applications. The guide says it is signed and notarized.
+  - Optional data folder: ReRun → Settings → "Data folder". Default is
+  `~/Library/Application Support/ReRun`. Choose it before pressing Set Up.
+  External drives trigger a one-time macOS removable-volume permission prompt.
+
+  GTA-specific:
+  - Pick GTA at the top of the ReRun window. If the GTA page shows "Set Up",
+  press it. This installs Wine 10.0 only (no Steam). GTA and GTA2 share their
+  own Wine 10.0.
+  - Press "Choose Game Folder" and select the folder that contains GTADATA, or
+  its GTAWIN or WINO folder.
+  - Don't run SETTINGS.EXE or GTA.REG. ReRun writes the settings they would.
+  - First Play downloads cnc-ddraw (about 400 KB).
+
+  What ReRun changes:
+  - Graphics: puts cnc-ddraw's `ddraw.dll` and a `ddraw.ini` beside GTAWIN.EXE.
+  Scales the game to a borderless full-screen window through OpenGL. The guide
+  does not list any ddraw.ini keys or values.
+  - Screen mode: the game stores its mode in `GTADATA\player_a.dat`. ReRun sets
+  that one byte to 800×600 in 32-bit color (which also enables 24-bit textures).
+  The guide says "Nothing else in the file changes."
+  - Registry: ReRun writes the game's registry settings, set to English and
+  installed in its folder. Keys are written only the first time, so later
+  changes in SETTINGS.EXE are kept.
+  - Display: the game fills the screen in 4:3 with black bars. Menus are
+  640×480. The city plays at 800×600 in 32-bit.
+
+  Not mentioned: CD or music/audio settings, controls or key bindings, and any
+  other language besides English.
+
+  3. Known issues and troubleshooting
+  - "Please run 'Settings' first": the game didn't find its keys. Press Play in
+  ReRun again, which writes them first.
+  - Black screen: cnc-ddraw is not beside GTAWIN.EXE. Launch with ReRun's Play
+  rather than opening the game directly, so the files get restored.
+  - ReRun keeps asking for removable-volume access: allow it in System Settings
+  → Privacy & Security → Files & Folders → ReRun.
+  - Hangs: ⋯ → Stop Game. Logs: ⋯ → Show Logs.
+  - Support: the guide asks for the step, what you saw, and the logs from ⋯ →
+  Show Logs. Contact is via mailto:rafabertholdo@gmail.com (subject "ReRun — GTA
+  on Mac").
+  - Limitations: the Rockstar Classics install is missing Track8.wav. The guide
+  says "Track8.wav won't extract this way, so that radio track is missing."
+
+  4. Where to get the game files
+  - Option A: your own copy of the Windows GTA folder with GTAWIN and GTADATA.
+  The guide does not name a store.
+  - Option B: Rockstar Classics' free release. The guide says "You don't need
+  Windows to install it: unpack GTAINSTALLER.exe with unshield (brew install
+  unshield)." Commands from the guide:
+    unzip -q GTAINSTALLER.exe -d extract
+    unshield x extract/GTAINSTALLER/data1.cab
+    rm -rf extract
+    The game is in Program_Executable_Files/.
+
+  Other pages: the guide links to ReRun's download at
+  https://github.com/rafabertholdo/rerun/releases/latest and the product page
+  /rerun/. The product page also lists the GTA2 guide (/guides/gta2-on-mac/) and
+  the Resident Evil guides, which I did not read.
+
+⏺ ReRun is aimed at the Windows GTA build, but the Grand Theft Auto.exe here is
+  a DOSBox wrapper for the DOS version. I'm checking for other GTA copies before
+  choosing a config. · summary
+
+  Ran 4 shell commands (ctrl+o to expand)
+
+⏺ Test launch through ReRun's Wine worked from the command line, but I can't
+  capture the screen, so I'm checking what the logs alone can tell me.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+⏺ I haven't changed any config yet: I can't see the game's screen from here, so
+  I can't tell which setting needs changing. What I did establish is which file
+  matters and why ReRun's own fixes don't apply to this pack.
+
+  What's going on
+
+  - The pack's exe is DOSBox. gta-max/Grand Theft Auto.exe is DOSBox (SVN-Daum
+    build) running the DOS version of GTA, not the Windows game.
+  - ReRun expects the Windows game. Its guide says it plays the Windows version
+    (GTAWIN.EXE, or the Rockstar Classics WINO\Grand Theft Auto.exe) and that
+    the DOS version isn't used. It picks up the pack's exe only because of the
+    matching file name.
+  - ReRun's fixes do nothing here. Its tweaks all target the Windows game: the
+    cnc-ddraw ddraw.dll/ddraw.ini, the registry keys and the screen-mode byte in
+    PLAYER_A.DAT. As far as I can tell DOSBox ignores them, since the pack
+    renders through OpenGL (output=opengl).
+  - The only config that matters is dosbox.conf, plus the Glide wrapper settings
+    (nglide_config.exe) for the 3Dfx mode.
+
+  What I tested
+
+  - The pack does start under ReRun's Wine. Your two ReRun runs tonight both
+    reached the 3Dfx (Glide) mode at 800x600 and exited cleanly.
+  - I launched it once myself, windowed, straight into the normal 24-bit mode.
+    It started and ran at about 80% of one CPU core.
+  - macOS refused the screenshot, so I couldn't check picture, speed or sound.
+  - That test left an empty swap file in GTADOS, which I removed.
+
+  What I need from you
+
+  What goes wrong when you press Play: stretched picture, wrong monitor, choppy,
+  no sound or music, mouse or keyboard problems, a crash? And which menu entry
+  do you use, normal or 3Dfx? With that I can change the right lines in
+  dosbox.conf.
+
+  Alternatively, grant Screen Recording to your terminal (System Settings →
+  Privacy & Security) and I can run the tests and look at the result myself.
+
+  A better route
+
+  You already have the Windows version at /Users/szdz/Workspace/games/Grand 
+  Theft Auto (1997)/games/GTA/GTA (gtawin/gtawin.exe next to gtadata). That is
+  the layout ReRun is built for, and your one attempt with it at 22:13 left an
+  empty log, so I can't tell how it went. If the goal is GTA1 running well in
+  ReRun rather than this pack specifically, I'd point ReRun at that folder and
+  debug that instead.
+
+✻ Baked for 2m 57s · done Wednesday 11:14 PM
+
+❯ we don't need to run it via rerun, if that is just dosbox wrapper             
+                                                                                
+  then use dosbox directly?                                                     
+                                                                                
+  and I would like to run this windows version so maybe no dosbox????           
+                                                                                
+  ideally create separate bash scripts running no matter how many versions of   
+  configuration you find for how many version of game are here                  
+                                                                                
+  becasue in the end I've seen that there is classic gta1 and gta london and    
+  God only knows what else                                                      
+                                                                                
+  whatever you discover create separate script next to                          
+  '/Users/szdz/Workspace/__claude/gta1_rerun/link.sh'                           
+
+  Ran 3 shell commands, did not run 1 other call (ctrl+o to expand)
+  ⎿  $ cd /Users/szdz/Workspace/games; A="Grand Theft Auto (1997)/games/GTA/GTA"; B="Grand Theft Auto London 1969"; M="GTA1-MAX (1)"; md5 -r "$A"/gtawin/*.exe "$B"/gtawin/*.exe "$A"/gtados/*.[eE][xX][eE] "$B"/gtados/*.[eE][xX][eE] "$M"/GTADOS/*.[eE][xX][eE] | sort | awk '{h=$1; $1=""; print substr(h,1,8…
+  ⎿  1 action blocked by auto mode
+     │ Auto mode: [Undermining Oversight]
+⏺ Installing DOSBox was blocked, so I'll leave that step to you and have the
+  scripts check for it. Comparing the game folders now to see which are
+  duplicates.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+⏺ Write(_dosbox.sh)
+  ⎿  Wrote 199 lines to _dosbox.sh
+       1 
+       2 #
+       3 # Engine script: runs one DOS build of GTA in a native macOS DOS
+         Box
+       4 # (no Wine, no ReRun). Not meant to be called by hand - the dos-
+         *.sh
+       5 # launchers next to this file call it with the right arguments.
+       6 #
+       7 # Usage:
+       8 #   /bin/bash _dosbox.sh <c_drive_dir> <exe> <cd1|-> <cd2|-> [--
+     … +192 lines (~5 KB) (ctrl+o to expand)
+
+⏺ Write(_wine.sh)
+  ⎿  Wrote 187 lines to _wine.sh
+       1 
+       2 #
+       3 # Engine script: runs one Windows build of GTA (gtawin.exe / gta
+         _uk.exe)
+       4 # through Wine - no DOSBox, no ReRun. Not meant to be called by 
+         hand - the
+       5 # win-*.sh launchers next to this file call it with the right ar
+         guments.
+       6 #
+       7 # Usage:
+     … +180 lines (ctrl+o to expand)
+
+  Listed 1 directory (ctrl+o to expand)
+
+❯ if there is anything to install then automate all what is needed in           
+  '/Users/szdz/Workspace/__claude/gta1_rerun/install.sh'                        
+
+⏺ Engine scripts are written; now adding install.sh, the extra link, and
+  generating the per-version launchers.
+
+⏺ Write(install.sh)
+  ⎿  Wrote 109 lines to install.sh
+       1 
+       2 #
+       3 # Installs everything the launchers in this directory need (on t
+         his Mac):
+       4 #   - Rosetta 2        (Wine and the Windows builds of GTA are I
+         ntel code)
+       5 #   - DOSBox Staging   (dos-*.sh launchers)       brew formula d
+         osbox-staging
+       6 #   - Wine             (win-*.sh, max-wine-*.sh)  brew cask wine
+         -stable
+     … +103 lines (ctrl+o to expand)
+
+  Ran 4 shell commands (ctrl+o to expand)
+
+⏺ Windows launcher confirmed starting under Homebrew Wine; doing a dry run of
+  the DOSBox launchers' generated config (DOSBox itself isn't installed yet).
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ The launchers are in /Users/szdz/Workspace/__claude/gta1_rerun/, but only the
+  Windows GTA1 one has actually been run; the DOSBox ones are untested because
+  DOSBox isn't installed and I was blocked from installing it.
+
+  First step (on this Mac, any terminal)
+
+  /bin/bash /Users/szdz/Workspace/__claude/gta1_rerun/install.sh
+
+  It installs DOSBox Staging, skips Wine and Rosetta if already present (Wine
+  is: Homebrew wine-stable 11.0), and runs link.sh. I wrote it but did not run
+  it.
+
+  What's there
+
+  There are two distinct game sets. link.sh now also links the second one as
+  gta-classic.
+
+  ┌────────────┬─────────────────────────┬──────────────────────────────────┐
+  │    Set     │         Folder          │             Contents             │
+  ├────────────┼─────────────────────────┼──────────────────────────────────┤
+  │ MAX pack   │ gta-max                 │ DOS builds of GTA1, London 1969, │
+  │            │                         │  London 1961                     │
+  ├────────────┼─────────────────────────┼──────────────────────────────────┤
+  │ Classic    │ gta-classic →           │ DOS and Windows builds of GTA1   │
+  │ release    │ games/Grand Theft Auto  │ and London 1969, plus CD images  │
+  │            │ (1997)                  │ for music                        │
+  └────────────┴─────────────────────────┴──────────────────────────────────┘
+
+  games/Grand Theft Auto London 1969 holds the same executables as the classic
+  release (same checksums), so it gets no scripts of its own. The remaining
+  items in games/ are CD images and installers, not runnable installs.
+
+  Launchers, one per version and configuration:
+
+  - Windows build, no DOSBox: win-classic-gta1.sh, win-classic-london69.sh
+  - DOS builds in native DOSBox, MAX pack:
+    dos-max-{gta1,london69,london61}-{24bit,8bit,3dfx}.sh (9 scripts)
+  - DOS builds in native DOSBox, classic release:
+    dos-classic-{gta1,london69}-{24bit,8bit,3dfx}.sh (6 scripts)
+  - MAX pack's own menu through Wine: max-wine-menu.sh (the pack's bundled
+    DOSBox, which is what ReRun was running)
+
+  The dos-* scripts accept --window. _dosbox.sh and _wine.sh are the shared
+  engines the launchers call.
+
+  What was verified
+
+  - win-classic-gta1.sh: ran with Homebrew Wine; the game process stayed up for
+    about 40 seconds with no game errors in the log until I stopped it. I could
+    not see the screen, so picture, sound and controls are unchecked.
+  - win-classic-london69.sh: not run. It may ask for the CD.
+  - max-wine-menu.sh: not run as a script. The same exe started earlier under
+    ReRun's Wine, but not under Homebrew Wine.
+  - dos-* scripts: only a dry run with a stand-in binary to check the generated
+    config and mounts. The DOSBox settings are written from memory for DOSBox
+    Staging, so expect to adjust them on first real run.
+  - 3dfx variants: the least certain. They rely on DOSBox's emulated Voodoo card
+    finding the pack's glide2x_emu.ovl through the DOS PATH.
+
+  Side effects to know about
+
+  - The Windows launchers create a Wine prefix at gta1_rerun/.wine-prefix (331
+    MB, already created by my test). I added it to .gitignore.
+  - They import the game's registry keys once and reuse the cnc-ddraw
+    ddraw.dll/ddraw.ini that ReRun already placed in the classic gtawin folder.
+
+  Start with win-classic-gta1.sh, since it is the one that has actually run, and
+  tell me what you see.
+
+✻ Cooked for 5m 19s · done Wednesday 11:23 PM
+
+❯ next to '/Users/szdz/Workspace/__claude/gta1_rerun/link.sh' create xx.ts and  
+  mount from top to bottom these which in your opinion have highest chance to   
+  work                                                                          
+                                                                                
+  the one you ran moment ago was running smooth                                 
+                                                                                
+  also tell me                                                                  
+                                                                                
+  did you use rerun after all ? or just dosbox? or what?                        
+                                                                                
+  Explain in resonable details what you did in                                  
+  '/Users/szdz/Workspace/__claude/gta1_rerun/SUMMARY.md'                        
+
+⏺ Skill(xx)
+  ⎿  Loaded skill
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+⏺ Write(SUMMARY.md)
+  ⎿  Wrote 133 lines to SUMMARY.md
+       1 # GTA1 / GTA London on this Mac - what was done
+       2 
+       3 ## Short answer: ReRun, DOSBox, or what?
+       4 
+       5 **The launchers here use neither ReRun nor (for the one that is
+         confirmed working) DOSBox.**
+       6 
+       7 | Launcher group | What actually runs the game | ReRun involved?
+          | Status |
+       8 | --- | --- | --- | --- |
+     … +125 lines (ctrl+o to expand)
+
+⏺ xx.ts and SUMMARY.md are both in /Users/szdz/Workspace/__claude/gta1_rerun/;
+  the xx config loads and lists all 21 commands.
+
+  Did I use ReRun or DOSBox?
+
+  Neither, for the launcher you saw running smooth. win-classic-gta1.sh runs the
+  Windows build of the game (gtawin.exe) through Homebrew Wine 11, with
+  cnc-ddraw handling the graphics.
+
+  - ReRun: used only for investigation. I read its logs and guide, and launched
+    the MAX pack once with the Wine it had downloaded to see whether the pack
+    starts. No script depends on ReRun.
+  - DOSBox: not used yet. The dos-* launchers are written for a native macOS
+    DOSBox, but it isn't installed (my install attempt was blocked), so they
+    have never run.
+  - One leftover from ReRun: the cnc-ddraw ddraw.dll and ddraw.ini it placed in
+    the classic gtawin folder are reused by the Windows launchers.
+
+  The xx menu, top to bottom
+
+  1. win gta1 — the confirmed one.
+  2. win london69 — same engine, different exe; not run yet and may ask for the
+     CD.
+  3. max wine menu — the MAX pack's own menu through Wine; the exe is known to
+     start under Wine.
+  4. dos … 24bit (5 commands) — the default mode of the DOS builds.
+  5. dos … 8bit (5 commands).
+  6. dos … 3dfx (5 commands) — least certain, they depend on DOSBox's emulated
+     Voodoo card.
+  7. install, link, help.
+
+  The dos … commands pass --window through. Run xx install first before trying
+  any of them.
+
+  The help command prints "GitHub: origin" instead of a link because this repo
+  has no origin remote.
+
+  SUMMARY.md covers the rest: why ReRun didn't fit the MAX pack, what each
+  engine script does step by step, what is verified versus untested, and the
+  side effects outside this directory.
+
+✻ Cogitated for 1m 19s · done Wednesday 11:26 PM
+
+❯ which one of these would provide highest resolution?                          
+
+⏺ Most likely win gta1 (and win london69), the Windows build — but that is from
+  what I know about the game, not something I measured here.
+
+  ┌───────────┬─────────────────────────────────────────────────────────────┐
+  │ Launcher  │                         Resolution                          │
+  │   group   │                                                             │
+  ├───────────┼─────────────────────────────────────────────────────────────┤
+  │           │ Currently 800x600 in 32-bit colour (ReRun set that). The    │
+  │ win …     │ game takes its list of modes from the graphics layer, and   │
+  │           │ cnc-ddraw can offer modes above 800x600, so this one has    │
+  │           │ the highest ceiling.                                        │
+  ├───────────┼─────────────────────────────────────────────────────────────┤
+  │ dos …     │ Whatever VESA modes DOSBox's emulated card offers; the MAX  │
+  │ 24bit     │ pack readme sets 800x600x32 as its base. I'd expect a       │
+  │           │ ceiling around 1024x768.                                    │
+  ├───────────┼─────────────────────────────────────────────────────────────┤
+  │ dos …     │ Tied to the emulated Voodoo card, typically 640x480, at     │
+  │ 3dfx      │ most 800x600. Smoother filtering, but not more pixels.      │
+  ├───────────┼─────────────────────────────────────────────────────────────┤
+  │ dos …     │ The low-colour, low-resolution build; the lowest of the     │
+  │ 8bit      │ four.                                                       │
+  └───────────┴─────────────────────────────────────────────────────────────┘
+
+  - Changing it in-game: F11 switches resolution (the MAX pack readme mentions
+    the same key). In win gta1, press it to see how far the list goes; I haven't
+    checked which modes it actually offers.
+  - What higher resolution does: in GTA1 it mostly shows more of the city around
+    you, not sharper cars and people, because the sprites are fixed-size. At
+    very high resolutions everything gets small.
+  - What you see on the monitor: in the Windows build, cnc-ddraw stretches
+    whatever the game renders to full screen, so the picture fills the display
+    either way.
+
+  If F11 in win gta1 stops at 800x600 or 1024x768 and you want more, tell me
+  what it offers and I'll look at widening the mode list in ddraw.ini.
+
+✻ Brewed for 15s · done Wednesday 11:27 PM
+
+❯ can you enrich xx.ts in description section to tell which resolution is where 
+                                                                                
+  maybe also register that in the label too                                     
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ xx.ts now carries the resolution both in each command's name and at the start
+  of its description; the menu loads with all 21 commands.
+
+  ┌─────────────────┬────────────┬─────────────────────────────────────────┐
+  │    Commands     │   Label    │            Description says             │
+  │                 │   suffix   │                                         │
+  ├─────────────────┼────────────┼─────────────────────────────────────────┤
+  │ win gta1, win   │ 800x600+   │ 800x600 32-bit now, F11 cycles modes,   │
+  │ london69        │            │ highest ceiling of all                  │
+  ├─────────────────┼────────────┼─────────────────────────────────────────┤
+  │ dos … 24bit     │ 800x600    │ 800x600 expected, F11 cycles modes,     │
+  │                 │            │ ceiling around 1024x768                 │
+  ├─────────────────┼────────────┼─────────────────────────────────────────┤
+  │ dos … 8bit      │ 640x480    │ 640x480 in 256 colours, the lowest      │
+  ├─────────────────┼────────────┼─────────────────────────────────────────┤
+  │ dos … 3dfx      │ 640x480    │ 640x480 expected, at most 800x600,      │
+  │                 │            │ filtered but not more pixels            │
+  ├─────────────────┼────────────┼─────────────────────────────────────────┤
+  │ max wine menu   │ none       │ depends on the menu choice; normal and  │
+  │                 │            │ 3dfx both 800x600                       │
+  └─────────────────┴────────────┴─────────────────────────────────────────┘
+
+  Only two of these figures come from this machine: the win … 800x600 32-bit
+  value (the mode ReRun set) and the 800x600 for the pack's 3dfx mode (from its
+  log). The rest are expected values that I haven't measured, and the
+  descriptions say "expected" or "not checked" accordingly.
+
+  The command names changed, so typing them directly now needs the suffix, for
+  example xx "win gta1 800x600+". If you'd rather keep the short names and have
+  the resolution only in the description, say so and I'll revert the labels.
+
+✻ Sautéed for 22s · done Wednesday 11:28 PM
+
+※ recap: We're getting GTA1 and GTA London running on your Mac through launcher scripts and an xx menu; the Windows GTA1 launcher works, and the menu now shows resolutions. Next: run install.sh to add DOSBox, then try the dos launchers. (turn off recaps in /config)
+
+❯ can you also summaris what version of gta we are dealing with here in         
+  '/Users/szdz/Workspace/__claude/gta1_rerun/GAME_VERSIONS.md'                  
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Write(GAME_VERSIONS.md)
+  ⎿  Wrote 100 lines to GAME_VERSIONS.md
+      1 # Which versions of GTA are here
+      2 
+      3 Everything in `/Users/szdz/Workspace/games` is the **first, top-d
+        own Grand Theft Auto**
+      4 (DMA Design, 1997) and its two London add-ons, plus an unused GTA
+        2 CD image.
+      5 There is no single "version" - there are three games, each in sev
+        eral technical builds,
+      6 packaged in three different ways.
+      7 
+     … +93 lines (ctrl+o to expand)
+⏺ /Users/szdz/Workspace/__claude/gta1_rerun/GAME_VERSIONS.md is written. In
+  short, everything here is the first, top-down Grand Theft Auto (1997) and its
+  two London add-ons — three games, each in several technical builds, packaged
+  three ways.
+
+  - The games: GTA1, GTA: London 1969 (mission pack), and GTA: London 1961 (a
+    free add-on to London 1969).
+  - The builds: each game exists as DOS 8-bit, DOS 24-bit and DOS 3dfx; GTA1 and
+    London 1969 also have a Windows build (gtawin.exe, gta_uk.exe). There is no
+    Windows build of London 1961 on this disk.
+  - MAX pack (gta-max): a fan-made bundle, version 1.3 from 2016, with only DOS
+    builds of all three games. Its executables are modified compared with the
+    classic release, and it is the only place London 1961 is playable.
+  - Classic release (gta-classic): the original GTA1 and London 1969 files, DOS
+    and Windows builds, plus full CD images for music, wrapped with DOSBox 0.74.
+    This is the only place the Windows builds exist, including the one you saw
+    running smooth.
+  - games/Grand Theft Auto London 1969: a duplicate of the classic install
+    (identical executable checksums) without the CD images.
+  - Everything else in games/: CD images, installers and self-extracting
+    archives, plus a GTA2 CD image.
+
+  The document also maps every launcher to its game, build and package. A few
+  points are my reading of the evidence rather than confirmed facts and are
+  marked "inferred" in the file, such as GTA1setup.exe being Rockstar's free
+  download, which I did not unpack. The games' release years and add-on
+  descriptions are from my general knowledge, not from the files.
+
+✻ Churned for 46s · done Wednesday 11:46 PM
+
+※ recap: Goal: get GTA1 and the London add-ons running on this Mac through launcher scripts in gta1_rerun; the Windows GTA1 launcher works, and the docs and xx menu are written. Next: run install.sh, then try the untested DOSBox launchers.
+
+❯ I wonder if there is a way to control the speed of gameplay, frames per       
+  seconds or something, because game seems to run quite fast - I don't know     
+  maybe that is natural speed but I wonder if that could be controlled create   
+  new script and register with xx.ts                                            
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Write(speed.sh)
+  ⎿  Wrote 116 lines to speed.sh
+       1 
+       2 #
+       3 # Shows or sets the game speed limit of the WINDOWS builds (win-
+         classic-*.sh).
+       4 #
+       5 # The Windows build draws through cnc-ddraw, and cnc-ddraw can c
+         ap how many
+       6 # game ticks per second the game is allowed to do - setting "max
+         gameticks" in
+       7 #   gta-classic/games/GTA/GTA/gtawin/ddraw.ini
+     … +109 lines (ctrl+o to expand)
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+⏺ Yes, the speed can be controlled: I added speed.sh and registered it as speed
+  in xx.ts, and left the cap set to 30 ticks per second as a starting point.
+  Whether 30 feels right is for you to judge. I haven't run the game with it,
+  and I don't know the original's exact native rate.
+
+  The Windows build draws through cnc-ddraw, which has a setting (maxgameticks)
+  that caps how many game ticks per second the game may do. Lower means slower.
+  The script edits only that one line in
+  gta-classic/games/GTA/GTA/gtawin/ddraw.ini.
+
+  Usage, from gta1_rerun (or /bin/bash speed.sh … directly):
+
+  - xx speed shows the current setting.
+  - xx speed 25 caps at 25 ticks per second; cnc-ddraw's own docs suggest trying
+    60 / 30 / 25 / 20 / 15.
+  - xx speed off removes the cap.
+  - xx speed screen caps at the screen's refresh rate.
+  - Takes effect on restart: the change applies the next time the game starts.
+  - Windows builds only: it affects win gta1 and win london69, which share the
+    same file. It does nothing for the dos … launchers or max wine menu.
+  - Before this change: the line was absent, so the game ran at whatever
+    cnc-ddraw does by default.
+
+  Start win gta1 and compare; if 30 is still too fast, try 25.
+
+✻ Crunched for 45s · done Wednesday 11:54 PM
+
+❯ maybe we could do it in like two stage                                        
+                                                                                
+  first you call that speed (with xx.ts source: true which will set env var     
+  with selected value), and thhen each script would pick up that value and      
+  continue but inject in right place that value                                 
+                                                                                
+  It would be nice for each script to introduce pause until user press enter to 
+  confirm if current value is fine                                              
+                                                                                
+  allow user to stop and run again speed to change value and come back again to 
+  given script                                                                  
+
+  Listed 1 directory (ctrl+o to expand)
+
+❯ so I guess speed would need to be one of the first commands in xx.ts          
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+⏺ The two-stage flow is in place, and speed is now the first command in the xx
+  menu.
+
+  Stage 1 — choose the speed (runs in your shell via source: true, sets env var
+  GTA_SPEED for that terminal):
+
+  - xx speed 30 caps the game at 30 ticks per second (try 60 / 30 / 25 / 20 /
+    15; lower is slower).
+  - xx speed off removes the cap; xx speed screen caps at the screen's refresh
+    rate.
+  - xx speed unset forgets the value; xx speed with no argument shows it.
+
+  Stage 2 — start the game (xx 'win gta1 800x600+' or win london69):
+
+  - If GTA_SPEED is set, the launcher writes it into ddraw.ini; otherwise it
+    keeps what is already there.
+  - It then prints the speed that will be used and waits for Enter.
+  - Ctrl+C at that prompt stops it, so you can run xx speed 25 and start the
+    same command again.
+
+  What I checked: the speed command in both bash and zsh (valid values, off, bad
+  input, unset), and the launcher writing the value and printing the summary
+  with a stand-in for Wine. I have not run the real game through this flow, and
+  the Enter prompt itself was not exercised because it only appears in a real
+  terminal.
+
+  - Windows builds only: the DOS launchers and max wine menu ignore GTA_SPEED
+    and have no pause, since this setting doesn't exist there.
+  - The value sticks: each chosen speed is written to ddraw.ini, so after xx 
+    speed unset or in a new terminal the last value stays in effect. It
+    currently sits at 30.
+  - Per terminal: GTA_SPEED lives only in the terminal where you ran xx speed.
+
+✻ Worked for 1m 2s · done Wednesday 11:57 PM
+
+❯ also another thing is that I would like this game to also have window mode,   
+  not only full screen                                                          
+                                                                                
+  because it seems in fullscreen I cannot use mouse to interact with other      
+  windows or just tell me how to hop out of the game and come back . put that   
+  information to SUMMARY.md                                                     
+
+  Ran 1 shell command (ctrl+o to expand)
+
+❯   GTA_SPEED=><   (empty = not set, launchers keep what is in ddraw.ini)       
+                                                                                
+    xx speed 30       cap the game at 30 ticks per second (try 60 / 30 / 25 /   
+  20 / 15, lower = slower)                                                      
+    xx speed off      no cap                                                    
+    xx speed screen   cap at the refresh rate of the screen                     
+    xx speed unset    forget the value, launchers keep what is in ddraw.ini     
+                                                                                
+    Used by the Windows builds (win ...), which show it and wait for Enter      
+  before starting.                                                              
+  make it interactive                                                           
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+⏺ Window mode, the interactive xx speed, and the hop-out notes in SUMMARY.md are
+  all in place. None of it has been tried in the real game yet: I tested the
+  scripts with a stand-in for Wine and checked what they write to ddraw.ini.
+
+  Window mode
+
+  - xx 'win gta1 window 800x600+' and xx 'win london69 window 800x600+' are new
+    menu entries, right after the full-screen ones. By hand: /bin/bash 
+    win-classic-gta1.sh --window.
+  - The game opens in a normal macOS window you can drag and resize, and the
+    mouse is not captured, so you can click other windows.
+  - The first start uses a 1600x1200 window (the 800x600 picture doubled); after
+    that cnc-ddraw remembers the size you leave it in.
+  - Without --window the launcher switches back to borderless full screen. It
+    rewrites the mode in ddraw.ini on every start, so the mode always follows
+    the command you ran.
+
+  Hopping out of full screen and back
+
+  Full screen here is a borderless window, not an exclusive video mode, so these
+  should work:
+
+  - Cmd+Tab to another app, and Cmd+Tab back to the Wine app.
+  - Mission Control (Ctrl+Up or the swipe up) to pick another window.
+  - Option+Enter switches between full screen and window while playing.
+  - Ctrl+Tab releases the mouse if it is locked inside the game.
+
+  The last two are cnc-ddraw's own hotkeys, quoted from memory, with Mac Option
+  standing in for Alt. I couldn't try any of the four, so if Cmd+Tab doesn't get
+  you out, use the window mode. The game doesn't pause when you switch away.
+
+  Interactive speed
+
+  xx speed with no argument now shows the current value, lists the options and
+  asks you to type one; plain Enter changes nothing. xx speed 25 still works
+  directly. I tested typed input in both bash and zsh.
+
+  SUMMARY.md has two new sections covering this: "Window mode, and how to hop
+  out of the game and come back" and "Game speed (two stages)". The launcher's
+  pre-start screen also prints the display mode and the hop-out keys above the
+  speed.
+
+✻ Crunched for 1m 17s · done Wednesday 11:58 PM
+
+❯ I would like to control window or fullscreen also with dedicated xx.ts        
+  command if possible                                                           
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ There is now a dedicated display command in xx.ts, second in the menu right
+  after speed, and it works the same two-stage way.
+
+  Stage 1 — choose the mode (sets env var GTA_DISPLAY for that terminal):
+
+  - xx display shows the current value and asks you to type window, fullscreen
+    or unset; plain Enter changes nothing. w and f work as shortcuts.
+  - xx display window or xx display fullscreen sets it directly.
+
+  Stage 2 — start the game with xx 'win gta1 800x600+' or win london69. The
+  launcher applies the mode, prints it together with where it came from, and
+  waits for Enter as before. The pre-start screen now also reminds you of xx 
+  display next to xx speed.
+
+  How the mode is decided, in order:
+
+  1. The win … window commands (or --window by hand) always give a window.
+  2. Otherwise GTA_DISPLAY from xx display.
+  3. Otherwise full screen.
+
+  Unlike the speed, the display mode does not stick: in a new terminal, or after
+  xx display unset, the plain win … commands go back to full screen.
+
+  I tested the command in bash and zsh, and the launcher's handling of each case
+  with a stand-in for Wine; the real game has not been started in window mode
+  yet. SUMMARY.md is updated with the new command.
+
+✻ Baked for 33s · done Wednesday 11:59 PM
+
+❯ I mean                                                                        
+  Waiting for the debugger to disconnect...                                     
+  ✔ Select command to run █   1 - speed                                         
+                                                                                
+    current: GTA_SPEED=><   (empty = not set, launchers keep what is in         
+  ddraw.ini)                                                                    
+                                                                                
+    type one of:                                                                
+      60 / 30 / 25 / 20 / 15   or any number 1-1000 = game ticks per second,    
+  lower = slower                                                                
+      off                      no cap                                           
+      screen                   cap at the refresh rate of the screen            
+      unset                    forget the value, launchers keep what is in      
+  ddraw.ini                                                                     
+      (just Enter)             change nothing                                   
+                                                                                
+    speed:                                                                      
+  fully interactive, liek arrows down or up, or arrows left and right and enter 
+
+⏺ Write(_menu.sh)
+  ⎿  Wrote 135 lines to _menu.sh
+       1 
+       2 #
+       3 # Engine script: small arrow-key menu for the terminal.
+       4 # Draws the list on the terminal itself (/dev/tty), prints ONLY 
+         the chosen
+       5 # value to stdout - so it can be used like:
+       6 #
+       7 #   VALUE="$(/bin/bash _menu.sh "Game speed" "30" "60::60 ticks"
+          "30::30 ticks" "off::no cap")"
+       8 #
+     … +127 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+❯ and once selected present value of env var , no matter if exist or not        
+
+⏺ Arrow-key menu works in both zsh and bash; now adding a final line that always
+  prints the env var value after a selection.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+❯ in                                                                            
+  ~/Workspace/__claude/gta1_rerun szdz 130 xx                                   
+  Debugger listening on                                                         
+  ws://127.0.0.1:60288/bf4f0e66-faed-41fd-88d7-462388b7c501                     
+  For help, see: https://nodejs.org/en/docs/inspector                           
+  Debugger attached.                                                            
+  Waiting for the debugger to disconnect...                                     
+  ✔ Select command to run █   1 - speed                                         
+                                                                                
+    Game speed of the Windows builds  (now: GTA_SPEED=><)                       
+    arrows = move, Enter = confirm, q / Esc = cancel                            
+                                                                                
+    >  60 ticks per second  - fastest                                           
+       30 ticks per second                                                      
+       25 ticks per second                                                      
+       20 ticks per second                                                      
+       15 ticks per second  - slowest                                           
+       off     - no cap                                                         
+       screen  - refresh rate of the screen                                     
+       custom  - type any number 1-1000                                         
+       unset   - forget the value, launchers keep what is in ddraw.ini          
+                                                                                
+  nothing changed, GTA_SPEED=><                                                 
+  ~/Workspace/__claude/gta1_rerun szdz √                                        
+  also indicate which one is standard speed/ normal                             
+
+  Ran 3 shell commands (ctrl+o to expand)
+⏺ The menu now marks the standard speed, and every xx speed or xx display run
+  ends by printing both env vars, set or not.
+
+  Which one is standard
+
+  The first menu entry is now default - STANDARD: the game keeps its own timing.
+  It removes the cap line from ddraw.ini altogether. I call it standard because
+  cnc-ddraw's own built-in preset for GTA sets no speed cap, so the game's own
+  timing is what it ships with.
+
+  I could not find the game's intended frame rate as a number in the exe or its
+  readme. So if default still feels too fast, try 30 or 25 from the menu and
+  judge by eye.
+
+  ddraw.ini is back to standard right now: my test of the default option removed
+  the 30 cap I had left there earlier.
+
+  What the arrow menu does now
+
+  - Keys: up/down or left/right arrows move, Enter confirms, q or Esc cancels.
+  - Options: default, 60 / 30 / 25 / 20 / 15, off, screen, custom (asks you to
+    type a number) and unset. xx display has the same kind of menu with window,
+    fullscreen and unset.
+  - After any choice or cancel: it prints GTA_SPEED=>…< and GTA_DISPLAY=>…<.
+
+  I drove both menus through a simulated terminal in zsh and bash: arrows,
+  Enter, q, Esc and the custom number all gave the expected result.
+
+  In your paste the run ended with "nothing changed" while 60 was highlighted.
+  That is what q or Esc produces. If you pressed Enter there and still got
+  "nothing changed", tell me, because Enter worked in my simulation and that
+  would be a bug specific to your terminal.
+
+✻ Cogitated for 2m 35s · done 12:01 AM
+
+❯ how to save game ?                                                            
+                                                                                
+  in this setup?                                                                
+                                                                                
+  save and restore?                                                             
+
+⏺ GTA1 has no save-anywhere: you can't save in the middle of a city, and nothing
+  in this setup adds that. This is from what I know about the game, not
+  something I tested here.
+
+  How the game saves
+
+  - Progress is saved automatically when you finish a level (reach the target
+    score and complete the city chapter). The next level is then unlocked for
+    your player.
+  - The same file also keeps your player names, high scores and the screen mode.
+  - If you quit or die out of lives mid-level, you restart that level from the
+    beginning.
+
+  Where it lives in this setup
+
+  ┌──────────────────────┬───────────────────────────────────────────────────┐
+  │         Game         │                       File                        │
+  ├──────────────────────┼───────────────────────────────────────────────────┤
+  │ GTA1, classic        │                                                   │
+  │ release (win … and   │ gta-classic/games/GTA/GTA/gtadata/PLAYER_A.DAT    │
+  │ dos classic …)       │                                                   │
+  ├──────────────────────┼───────────────────────────────────────────────────┤
+  │ London 1969, classic │ gta-classic/games/GTA/GTA/gtadata/uk/Player_a.dat │
+  │  release             │                                                   │
+  ├──────────────────────┼───────────────────────────────────────────────────┤
+  │ GTA1, MAX pack       │ gta-max/GTADATA/PLAYER_A.DAT                      │
+  ├──────────────────────┼───────────────────────────────────────────────────┤
+  │ London, MAX pack     │ gta-max/GTADATA/UK/PLAYER_A.DAT and PLAYER_E.DAT  │
+  └──────────────────────┴───────────────────────────────────────────────────┘
+
+  The Windows and DOS builds of the same package share one file. The classic
+  release and the MAX pack do not share progress.
+
+  Save and restore by hand
+
+  Copying that file is the only real "save and restore" here: copy it somewhere
+  to back up, copy it back to restore, with the game closed. It restores
+  unlocked levels and scores, not a position inside a level.
+
+  DOSBox save states
+
+  The MAX pack readme mentions save states in its bundled DOSBox, which would be
+  a true mid-game save. That applies only to max wine menu, and the readme says
+  they crash the 3dfx mode. I haven't tried them.
+
+  If you want, I can add xx save and xx restore commands that back up and
+  restore these files with a timestamp.
+
+✻ Cogitated for 14s · done 12:04 AM
+
+❯  That applies only to max wine menu?                                          
+  what do you mean?                                                             
+                                                                                
+  does it mean it will not work in all modes from xx.ts?                        
+
+⏺ Correct: a true mid-game save would only be available in max wine menu, not in
+  the other xx commands. The reason is that save states are a feature of one
+  particular emulator, not of the game.
+
+  ┌───────────┬────────────────────────┬───────────────────────────────────┐
+  │    xx     │   What runs the game   │       Mid-game save states        │
+  │ commands  │                        │                                   │
+  ├───────────┼────────────────────────┼───────────────────────────────────┤
+  │           │ The Windows game       │ No. Only the game's own save at   │
+  │ win …     │ directly through Wine, │ the end of a level.               │
+  │           │  no emulator           │                                   │
+  ├───────────┼────────────────────────┼───────────────────────────────────┤
+  │           │ DOSBox Staging (what   │ No. As far as I know, DOSBox      │
+  │ dos …     │ install.sh installs)   │ Staging has no save-state         │
+  │           │                        │ feature.                          │
+  ├───────────┼────────────────────────┼───────────────────────────────────┤
+  │           │ The DOSBox bundled     │ Yes, according to the pack's      │
+  │ max wine  │ with the MAX pack (the │ readme, except in 3dfx mode where │
+  │ menu      │  SVN-Daum build)       │  it says they crash. Not tried by │
+  │           │                        │  me.                              │
+  └───────────┴────────────────────────┴───────────────────────────────────┘
+
+  A save state is the emulator freezing the whole emulated PC to a file and
+  loading it back later, so it only exists where an emulator that supports it is
+  running the game. The game's own saving (progress kept when you finish a
+  level, stored in PLAYER_A.DAT) works the same in every command.
+
+  If mid-game saves matter to you, there are two routes:
+
+  - Use max wine menu and pick a normal (non-3dfx) mode. I don't know the save
+    and load keys of that DOSBox build offhand; I'd have to look them up.
+  - Switch the dos … launchers to DOSBox-X instead of DOSBox Staging. DOSBox-X
+    has save states, and _dosbox.sh already accepts it if it is installed. This
+    is untested like the rest of the dos … group.
+
+  Neither route gives save states to win gta1, which is the one you've confirmed
+  runs well. Tell me if you want me to pursue either.
+
+✻ Churned for 11s · done 12:07 AM
+
+! xx                                                                            
+  ⎿  Debugger listening on ws://127.0.0.1:62894/4e90f7b3-2ca9-414f-b30c-d7e
+     061037dbc
+     For help, see: https://nodejs.org/en/docs/inspector
+     … +5 lines (ctrl+o to expand)
+
+⏺ That error is expected here: the xx menu needs a real terminal, and commands
+  run from inside this Claude Code session don't have one. Nothing is wrong with
+  xx.ts.
+
+  Run xx in your own terminal window instead, from
+  /Users/szdz/Workspace/__claude/gta1_rerun. That is also the only place xx 
+  speed and xx display are useful, since they set env vars in the shell you then
+  start the game from.
+
+  From inside this session only the non-interactive forms work:
+
+  - xx --list shows the commands.
+  - xx <name or number> runs one directly, for example xx 'win gta1 800x600+'.
+    Without a terminal the launcher skips its "Press Enter" pause and starts the
+    game straight away.
+
+✻ Cooked for 7s · done 12:10 AM
+
+! xx 7                                                                          
+  ⎿  Debugger listening on 
+     ws://127.0.0.1:63224/f1978baf-c480-4d00-8a63-06f888532df6
+     For help, see: https://nodejs.org/en/docs/inspector
+     Debugger attached.
+     Waiting for the debugger to disconnect...
+     DOSBox version SVN-Daum
+     Copyright 2002-2015 DOSBox Team, published under GNU GPL.
+     ---
+     [mvk-info] MoltenVK version 1.4.1, supporting Vulkan version 1.4.334.
+             The following 153 Vulkan extensions are supported:
+             VK_KHR_16bit_storage v1
+             VK_KHR_8bit_storage v1
+             VK_KHR_bind_memory2 v1
+             VK_KHR_buffer_device_address v1
+             VK_KHR_calibrated_timestamps v1
+             VK_KHR_copy_commands2 v1
+             VK_KHR_create_renderpass2 v1
+             VK_KHR_dedicated_allocation v3
+             VK_KHR_deferred_host_operations v4
+             VK_KHR_depth_stencil_resolve v1
+             VK_KHR_descriptor_update_template v1
+             VK_KHR_device_group v4
+             VK_KHR_device_group_creation v1
+             VK_KHR_driver_properties v1
+             VK_KHR_dynamic_rendering v1
+             VK_KHR_dynamic_rendering_local_read v1
+             VK_KHR_external_fence v1
+             VK_KHR_external_fence_capabilities v1
+             VK_KHR_external_memory v1
+             VK_KHR_external_memory_capabilities v1
+             VK_KHR_external_semaphore v1
+             VK_KHR_external_semaphore_capabilities v1
+             VK_KHR_format_feature_flags2 v2
+             VK_KHR_fragment_shader_barycentric v1
+             VK_KHR_get_memory_requirements2 v1
+             VK_KHR_get_physical_device_properties2 v2
+             VK_KHR_get_surface_capabilities2 v1
+             VK_KHR_global_priority v1
+             VK_KHR_image_format_list v1
+             VK_KHR_imageless_framebuffer v1
+             VK_KHR_incremental_present v2
+             VK_KHR_index_type_uint8 v1
+             VK_KHR_line_rasterization v1
+             VK_KHR_load_store_op_none v1
+             VK_KHR_maintenance1 v2
+             VK_KHR_maintenance2 v1
+             VK_KHR_maintenance3 v1
+             VK_KHR_maintenance4 v2
+             VK_KHR_maintenance5 v1
+             VK_KHR_maintenance6 v1
+             VK_KHR_maintenance7 v1
+             VK_KHR_maintenance8 v1
+             VK_KHR_maintenance9 v1
+             VK_KHR_map_memory2 v1
+             VK_KHR_multiview v1
+             VK_KHR_portability_subset v1
+             VK_KHR_present_id v1
+             VK_KHR_present_id2 v1
+             VK_KHR_present_wait v1
+             VK_KHR_present_wait2 v1
+             VK_KHR_push_descriptor v2
+             VK_KHR_relaxed_block_layout v1
+             VK_KHR_robustness2 v1
+             VK_KHR_sampler_mirror_clamp_to_edge v3
+             VK_KHR_sampler_ycbcr_conversion v14
+             VK_KHR_separate_depth_stencil_layouts v1
+             VK_KHR_shader_draw_parameters v1
+             VK_KHR_shader_expect_assume v1
+             VK_KHR_shader_float_controls v4
+             VK_KHR_shader_float_controls2 v1
+             VK_KHR_shader_float16_int8 v1
+             VK_KHR_shader_fma v1
+             VK_KHR_shader_integer_dot_product v1
+             VK_KHR_shader_maximal_reconvergence v1
+             VK_KHR_shader_non_semantic_info v1
+             VK_KHR_shader_quad_control v1
+             VK_KHR_shader_relaxed_extended_instruction v1
+             VK_KHR_shader_subgroup_extended_types v1
+             VK_KHR_shader_subgroup_rotate v2
+             VK_KHR_shader_subgroup_uniform_control_flow v1
+             VK_KHR_shader_terminate_invocation v1
+             VK_KHR_spirv_1_4 v1
+             VK_KHR_storage_buffer_storage_class v1
+             VK_KHR_surface v25
+             VK_KHR_surface_maintenance1 v1
+             VK_KHR_surface_protected_capabilities v1
+             VK_KHR_swapchain v70
+             VK_KHR_swapchain_maintenance1 v1
+             VK_KHR_swapchain_mutable_format v1
+             VK_KHR_synchronization2 v1
+             VK_KHR_timeline_semaphore v2
+             VK_KHR_uniform_buffer_standard_layout v1
+             VK_KHR_variable_pointers v1
+             VK_KHR_vertex_attribute_divisor v1
+             VK_KHR_vulkan_memory_model v3
+             VK_KHR_zero_initialize_workgroup_memory v1
+             VK_EXT_4444_formats v1
+             VK_EXT_buffer_device_address v2
+             VK_EXT_calibrated_timestamps v2
+             VK_EXT_debug_marker v4
+             VK_EXT_debug_report v10
+             VK_EXT_debug_utils v2
+             VK_EXT_depth_clip_control v1
+             VK_EXT_descriptor_indexing v2
+             VK_EXT_extended_dynamic_state v1
+             VK_EXT_extended_dynamic_state2 v1
+             VK_EXT_extended_dynamic_state3 v2
+             VK_EXT_external_memory_host v1
+             VK_EXT_external_memory_metal v1
+             VK_EXT_fragment_shader_interlock v1
+             VK_EXT_global_priority v2
+             VK_EXT_global_priority_query v1
+             VK_EXT_hdr_metadata v3
+             VK_EXT_headless_surface v1
+             VK_EXT_host_image_copy v1
+             VK_EXT_host_query_reset v1
+             VK_EXT_image_2d_view_of_3d v1
+             VK_EXT_image_robustness v1
+             VK_EXT_index_type_uint8 v1
+             VK_EXT_inline_uniform_block v1
+             VK_EXT_layer_settings v2
+             VK_EXT_legacy_dithering v2
+             VK_EXT_line_rasterization v1
+             VK_EXT_load_store_op_none v1
+             VK_EXT_memory_budget v1
+             VK_EXT_metal_objects v2
+             VK_EXT_metal_surface v1
+             VK_EXT_non_seamless_cube_map v1
+             VK_EXT_pipeline_creation_cache_control v3
+             VK_EXT_pipeline_creation_feedback v1
+             VK_EXT_pipeline_robustness v1
+             VK_EXT_post_depth_coverage v1
+             VK_EXT_primitive_topology_list_restart v1
+             VK_EXT_private_data v1
+             VK_EXT_provoking_vertex v1
+             VK_EXT_robustness2 v1
+             VK_EXT_sample_locations v1
+             VK_EXT_scalar_block_layout v1
+             VK_EXT_separate_stencil_usage v1
+             VK_EXT_shader_atomic_float v1
+             VK_EXT_shader_demote_to_helper_invocation v1
+             VK_EXT_shader_stencil_export v1
+             VK_EXT_shader_subgroup_ballot v1
+             VK_EXT_shader_subgroup_vote v1
+             VK_EXT_shader_viewport_index_layer v1
+             VK_EXT_subgroup_size_control v2
+             VK_EXT_surface_maintenance1 v1
+             VK_EXT_swapchain_colorspace v5
+             VK_EXT_swapchain_maintenance1 v1
+             VK_EXT_texel_buffer_alignment v1
+             VK_EXT_texture_compression_astc_hdr v1
+             VK_EXT_tooling_info v1
+             VK_EXT_vertex_attribute_divisor v3
+             VK_AMD_gpu_shader_half_float v2
+             VK_AMD_negative_viewport_height v1
+             VK_AMD_shader_image_load_store_lod v1
+             VK_AMD_shader_trinary_minmax v1
+             VK_GOOGLE_display_timing v1
+             VK_IMG_format_pvrtc v1
+             VK_INTEL_shader_integer_functions2 v1
+             VK_MVK_macos_surface v3
+             VK_MVK_moltenvk v37
+             VK_NV_fragment_shader_barycentric v1
+     [mvk-info] GPU device:
+             model: Apple M1 Pro
+             type: Integrated
+             vendorID: 0x106b
+             deviceID: 0x1a060207
+             pipelineCacheUUID: DB445FF2-1A06-0207-0000-000100000000
+             GPU memory available: 25559 MB
+             GPU memory used: 0 MB
+             Metal Shading Language 3.2
+             supports the following GPU Features:
+                     GPU Family Metal 3
+                     GPU Family Apple 7
+                     GPU Family Mac 2
+                     Read-Write Texture Tier 2
+     [mvk-info] Created VkInstance for Vulkan version 1.0.334, as requested by 
+     app, with the following 3 Vulkan extensions enabled:
+             VK_KHR_external_memory_capabilities v1
+             VK_KHR_external_semaphore_capabilities v1
+             VK_KHR_get_physical_device_properties2 v2
+     GUI: Press Ctrl-F10 to capture/release mouse.
+          Save your configuration and restart DOSBox if your settings do not 
+     take effect.
+     CONFIG:Loading primary settings from config file dosbox.conf
+     A20: fast remapping (64KB+1MB) DOSBox style
+     ROM BIOS range: 0xe0000-0xFFFFF
+     ROM BIOS range, final: 0xe0000-0xFFFFF
+     ROMBIOS_GetMemory(0x01ff0 bytes,"BIOS with fixed 
+     layout",align=1,mustbe=0xfe000) = 0xfe000
+     ROMBIOS_GetMemory(0x01600 bytes,"DOSBox callbacks 
+     region",align=1,mustbe=0xf1000) = 0xf1000
+     ROMBIOS_GetMemory(0x0000e bytes,"DOSBox vm86 hack",align=1,mustbe=0xf0700) 
+     = 0xf0700
+     Callback area starts at f000:1000
+     APM BIOS allow: real=1 pm16=1 pm32=1
+     voodoo: ogl=1
+     MIDI:Opened device:win32
+     Registered ISA PnP read port at 0x20b
+     ROMBIOS_GetMemory(0x00010 bytes,"BIOS configuration (INT 15h 
+     AH=0xC0)",align=16,mustbe=0x00000) = 0xfdff0
+     Glide:LFB access: read-write
+     kernel allocation in umb option incompatible with other settings, 
+     disabling.
+     UMB ending segment 0xe000 conflicts with BIOS at 0xe000, asking BIOS to 
+     move aside
+     UMB ending segment 0xe000 conflicts with BIOS at 0xe000, truncating region
+     WinPcap has to be installed for the NE2000 to work.
+     SHELL: psp_seg 0x0118
+     SHELL: env_seg 0x012b
+     [mvk-info] MoltenVK version 1.4.1, supporting Vulkan version 1.4.334.
+             The following 153 Vulkan extensions are supported:
+             VK_KHR_16bit_storage v1
+             VK_KHR_8bit_storage v1
+             VK_KHR_bind_memory2 v1
+             VK_KHR_buffer_device_address v1
+             VK_KHR_calibrated_timestamps v1
+             VK_KHR_copy_commands2 v1
+             VK_KHR_create_renderpass2 v1
+             VK_KHR_dedicated_allocation v3
+             VK_KHR_deferred_host_operations v4
+             VK_KHR_depth_stencil_resolve v1
+             VK_KHR_descriptor_update_template v1
+             VK_KHR_device_group v4
+             VK_KHR_device_group_creation v1
+             VK_KHR_driver_properties v1
+             VK_KHR_dynamic_rendering v1
+             VK_KHR_dynamic_rendering_local_read v1
+             VK_KHR_external_fence v1
+             VK_KHR_external_fence_capabilities v1
+             VK_KHR_external_memory v1
+             VK_KHR_external_memory_capabilities v1
+             VK_KHR_external_semaphore v1
+             VK_KHR_external_semaphore_capabilities v1
+             VK_KHR_format_feature_flags2 v2
+             VK_KHR_fragment_shader_barycentric v1
+             VK_KHR_get_memory_requirements2 v1
+             VK_KHR_get_physical_device_properties2 v2
+             VK_KHR_get_surface_capabilities2 v1
+             VK_KHR_global_priority v1
+             VK_KHR_image_format_list v1
+             VK_KHR_imageless_framebuffer v1
+             VK_KHR_incremental_present v2
+             VK_KHR_index_type_uint8 v1
+             VK_KHR_line_rasterization v1
+             VK_KHR_load_store_op_none v1
+             VK_KHR_maintenance1 v2
+             VK_KHR_maintenance2 v1
+             VK_KHR_maintenance3 v1
+             VK_KHR_maintenance4 v2
+             VK_KHR_maintenance5 v1
+             VK_KHR_maintenance6 v1
+             VK_KHR_maintenance7 v1
+             VK_KHR_maintenance8 v1
+             VK_KHR_maintenance9 v1
+             VK_KHR_map_memory2 v1
+             VK_KHR_multiview v1
+             VK_KHR_portability_subset v1
+             VK_KHR_present_id v1
+             VK_KHR_present_id2 v1
+             VK_KHR_present_wait v1
+             VK_KHR_present_wait2 v1
+             VK_KHR_push_descriptor v2
+             VK_KHR_relaxed_block_layout v1
+             VK_KHR_robustness2 v1
+             VK_KHR_sampler_mirror_clamp_to_edge v3
+             VK_KHR_sampler_ycbcr_conversion v14
+             VK_KHR_separate_depth_stencil_layouts v1
+             VK_KHR_shader_draw_parameters v1
+             VK_KHR_shader_expect_assume v1
+             VK_KHR_shader_float_controls v4
+             VK_KHR_shader_float_controls2 v1
+             VK_KHR_shader_float16_int8 v1
+             VK_KHR_shader_fma v1
+             VK_KHR_shader_integer_dot_product v1
+             VK_KHR_shader_maximal_reconvergence v1
+             VK_KHR_shader_non_semantic_info v1
+             VK_KHR_shader_quad_control v1
+             VK_KHR_shader_relaxed_extended_instruction v1
+             VK_KHR_shader_subgroup_extended_types v1
+             VK_KHR_shader_subgroup_rotate v2
+             VK_KHR_shader_subgroup_uniform_control_flow v1
+             VK_KHR_shader_terminate_invocation v1
+             VK_KHR_spirv_1_4 v1
+             VK_KHR_storage_buffer_storage_class v1
+             VK_KHR_surface v25
+             VK_KHR_surface_maintenance1 v1
+             VK_KHR_surface_protected_capabilities v1
+             VK_KHR_swapchain v70
+             VK_KHR_swapchain_maintenance1 v1
+             VK_KHR_swapchain_mutable_format v1
+             VK_KHR_synchronization2 v1
+             VK_KHR_timeline_semaphore v2
+             VK_KHR_uniform_buffer_standard_layout v1
+             VK_KHR_variable_pointers v1
+             VK_KHR_vertex_attribute_divisor v1
+             VK_KHR_vulkan_memory_model v3
+             VK_KHR_zero_initialize_workgroup_memory v1
+             VK_EXT_4444_formats v1
+             VK_EXT_buffer_device_address v2
+             VK_EXT_calibrated_timestamps v2
+             VK_EXT_debug_marker v4
+             VK_EXT_debug_report v10
+             VK_EXT_debug_utils v2
+             VK_EXT_depth_clip_control v1
+             VK_EXT_descriptor_indexing v2
+             VK_EXT_extended_dynamic_state v1
+             VK_EXT_extended_dynamic_state2 v1
+             VK_EXT_extended_dynamic_state3 v2
+             VK_EXT_external_memory_host v1
+             VK_EXT_external_memory_metal v1
+             VK_EXT_fragment_shader_interlock v1
+             VK_EXT_global_priority v2
+             VK_EXT_global_priority_query v1
+             VK_EXT_hdr_metadata v3
+             VK_EXT_headless_surface v1
+             VK_EXT_host_image_copy v1
+             VK_EXT_host_query_reset v1
+             VK_EXT_image_2d_view_of_3d v1
+             VK_EXT_image_robustness v1
+             VK_EXT_index_type_uint8 v1
+             VK_EXT_inline_uniform_block v1
+             VK_EXT_layer_settings v2
+             VK_EXT_legacy_dithering v2
+             VK_EXT_line_rasterization v1
+             VK_EXT_load_store_op_none v1
+             VK_EXT_memory_budget v1
+             VK_EXT_metal_objects v2
+             VK_EXT_metal_surface v1
+             VK_EXT_non_seamless_cube_map v1
+             VK_EXT_pipeline_creation_cache_control v3
+             VK_EXT_pipeline_creation_feedback v1
+             VK_EXT_pipeline_robustness v1
+             VK_EXT_post_depth_coverage v1
+             VK_EXT_primitive_topology_list_restart v1
+             VK_EXT_private_data v1
+             VK_EXT_provoking_vertex v1
+             VK_EXT_robustness2 v1
+             VK_EXT_sample_locations v1
+             VK_EXT_scalar_block_layout v1
+             VK_EXT_separate_stencil_usage v1
+             VK_EXT_shader_atomic_float v1
+             VK_EXT_shader_demote_to_helper_invocation v1
+             VK_EXT_shader_stencil_export v1
+             VK_EXT_shader_subgroup_ballot v1
+             VK_EXT_shader_subgroup_vote v1
+             VK_EXT_shader_viewport_index_layer v1
+             VK_EXT_subgroup_size_control v2
+             VK_EXT_surface_maintenance1 v1
+             VK_EXT_swapchain_colorspace v5
+             VK_EXT_swapchain_maintenance1 v1
+             VK_EXT_texel_buffer_alignment v1
+             VK_EXT_texture_compression_astc_hdr v1
+             VK_EXT_tooling_info v1
+             VK_EXT_vertex_attribute_divisor v3
+             VK_AMD_gpu_shader_half_float v2
+             VK_AMD_negative_viewport_height v1
+             VK_AMD_shader_image_load_store_lod v1
+             VK_AMD_shader_trinary_minmax v1
+             VK_GOOGLE_display_timing v1
+             VK_IMG_format_pvrtc v1
+             VK_INTEL_shader_integer_functions2 v1
+             VK_MVK_macos_surface v3
+             VK_MVK_moltenvk v37
+             VK_NV_fragment_shader_barycentric v1
+     [mvk-info] GPU device:
+             model: Apple M1 Pro
+             type: Integrated
+             vendorID: 0x106b
+             deviceID: 0x1a060207
+             pipelineCacheUUID: DB445FF2-1A06-0207-0000-000100000000
+             GPU memory available: 25559 MB
+             GPU memory used: 0 MB
+             Metal Shading Language 3.2
+             supports the following GPU Features:
+                     GPU Family Metal 3
+                     GPU Family Apple 7
+                     GPU Family Mac 2
+                     Read-Write Texture Tier 2
+     [mvk-info] Created VkInstance for Vulkan version 1.0.334, as requested by 
+     app, with the following 3 Vulkan extensions enabled:
+             VK_KHR_external_memory_capabilities v1
+             VK_KHR_external_semaphore_capabilities v1
+             VK_KHR_get_physical_device_properties2 v2
+     DOS_AllocateMemory(blocks=0x000b) = 0x0171-0x017b
+     DOS_AllocateMemory(blocks=0x9e82) = 0x017d-0x9ffe
+     DOS_AllocateMemory(blocks=0x000b) = 0x0171-0x017b
+     DOS_AllocateMemory(blocks=0x9e82) = 0x017d-0x9ffe
+     IDE: index 0 slave=0
+     Rejecting cooked read from raw audio CD sector
+     DOS_AllocateMemory(blocks=0x000b) = 0x0171-0x017b
+     DOS_AllocateMemory(blocks=0x9e82) = 0x017d-0x9ffe
+     DOSBox switched to max cycles, because of the setting: cycles=auto. If the 
+     game runs too fast try a fixed cycles amount in DOSBox's options.
+
+
+⏺ That log is max wine menu (number 7) starting cleanly under Homebrew Wine,
+  which is the first time that launcher has actually been run as a script.
+
+  - It got into a game: DOSBox loaded the pack's dosbox.conf, mounted the music
+    CD image, and switched to max cycles, which happens once a game is launched
+    from the menu.
+  - No errors: the lines that look alarming are routine. The long VK_… lists are
+    Wine's graphics layer announcing itself, "WinPcap has to be installed" is
+    about network play, and "Rejecting cooked read from raw audio CD sector" is
+    DOSBox noting the CD is audio-only.
+  - Normal mode, not 3dfx: there is no "Glide:Activated" line, so you picked a
+    normal entry.
+
+  The log ends there, so I can't tell from it how the game looked, sounded or
+  ran. How was it compared with win gta1?
+
+  If it played fine, I'll change max wine menu from "not run" to confirmed in
+  SUMMARY.md and the xx description. This is also the one launcher where the
+  mid-game save states from the pack's readme could work, if you want me to look
+  up the keys.
+
+✻ Cogitated for 19s · done 12:12 AM
+
+❯ it crashed after selecting from menu                                          
+
+  Ran 1 shell command · 1 failed (ctrl+o to expand)
+
+⏺ Reproduced: under Homebrew Wine it dies right when the game itself starts.
+  Testing whether DOSBox's CPU mode is the trigger.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+⏺ Fix is in and the launcher starts with it; cleaning up a leftover test file
+  and updating the notes.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ I reproduced the crash and fixed the launcher: max wine menu now starts a game
+  without crashing, though I can't yet say whether it runs fast enough to play.
+
+  Cause: the pack's dosbox.conf has core=auto, which switches DOSBox to its
+  "dynamic" CPU core the moment a game starts. Under Homebrew Wine 11 that core
+  dies immediately (Exception frame is not in stack limits). It worked earlier
+  under ReRun's older Wine 10, which is why your ReRun runs didn't crash.
+
+  Fix: max-wine-menu.sh now runs DOSBox from a temporary copy of the config with
+  core=normal, the plain interpreter. The pack's own dosbox.conf is not
+  modified.
+
+  What I tested:
+  - With core=normal, 24-bit GTA1 started directly and was still running after
+    35 seconds, where the original setting crashed within seconds.
+  - The updated launcher itself starts and loads the temporary config. I did not
+    pick a game from the menu through it, so that last step is yours to
+    confirm.
+  - 3dfx and the London entries were not tried.
+
+  The catch: the interpreter is DOSBox's slowest core, so the game may feel
+  sluggish. If it does, there are two ways forward:
+  - Try another core with GTA_DOSBOX_CORE=simple (or dynamic to see the crash
+    again) before the command.
+  - Point this launcher at ReRun's Wine 10, where the fast core worked. That
+    would make this one launcher depend on ReRun's files.
+
+  I also updated the max wine menu description in xx.ts and its status in
+  SUMMARY.md. Try xx 7 again and tell me how it plays.
+
+✻ Sautéed for 2m 30s · done 12:15 AM
