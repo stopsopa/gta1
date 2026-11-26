@@ -65,7 +65,7 @@ if [[ -z "${C_DIR}" || -z "${EXE}" ]]; then
 fi
 
 if [[ ! -d "${C_DIR}/" ]]; then
-  echo "${0} error: game folder not found C_DIR=>${C_DIR}<, run first: /bin/bash ${_DIR}/link.sh"
+  echo "${0} error: game folder not found C_DIR=>${C_DIR}<, the game folders gta-max and gta-classic are expected in ${_DIR}"
   exit 1
 fi
 
@@ -167,7 +167,7 @@ EXE_LOWER="$(echo "${EXE}" | tr '[:upper:]' '[:lower:]')"
 if [[ "${EXE_LOWER}" == *fx* ]]; then
   GLIDE_SRC="${_DIR}/gta-max/glide2x_emu.ovl"
   if [[ ! -f "${GLIDE_SRC}" ]]; then
-    echo "${0} error: 3dfx build needs the Voodoo driver, not found GLIDE_SRC=>${GLIDE_SRC}<, run first: /bin/bash ${_DIR}/link.sh"
+    echo "${0} error: 3dfx build needs the Voodoo driver, not found GLIDE_SRC=>${GLIDE_SRC}<, it comes with the MAX pack folder gta-max expected in ${_DIR}"
     exit 1
   fi
   mkdir -p "${TMP_DIR}/glide"

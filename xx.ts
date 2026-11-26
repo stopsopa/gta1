@@ -312,14 +312,21 @@ set -e
 set -e
 /bin/bash install.sh
 `,
-      description: `install Rosetta, DOSBox Staging and Wine with brew (skips what is present), then link game folders  [install.sh]`,
+      description: `install Rosetta, DOSBox Staging and Wine with brew (skips what is present), [install.sh]`,
     },
-    [`link`]: {
+    [`pack`]: {
       command: `
 set -e
-/bin/bash link.sh
+/bin/bash pack.sh pack
 `,
-      description: `(re)create gta-max and gta-classic links to the game folders  [link.sh]`,
+      description: `Run before git add / commit. Files bigger than CHUNK from .env (the CD images) are chopped into [file].001 [file].002 ... next to them, added to .gitignore (once) and removed. Can be repeated  [pack.sh pack]`,
+    },
+    [`unpack`]: {
+      command: `
+set -e
+/bin/bash pack.sh unpack
+`,
+      description: `Run after git clone / pull, before playing. Glues [file].001 [file].002 ... back into [file] and removes the chunks. While unpacked git sees the chunks as deleted: xx pack before the next commit  [pack.sh unpack]`,
     },
     help: {
       command: `
@@ -331,7 +338,7 @@ cat <<EEE
 
   GTA1 / GTA London launchers for this Mac - details in SUMMARY.md
 
-  game folders (links made by link.sh):
+  game folders (next to this file):
     gta-max      MAX pack: DOS builds of GTA1, London 1969, London 1961
     gta-classic  classic release: DOS + Windows builds of GTA1, London 1969
 

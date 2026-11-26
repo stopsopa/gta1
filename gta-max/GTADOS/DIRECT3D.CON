@@ -1,0 +1,426 @@
+[sdl]
+fullscreen=true
+fulldouble=false
+fullresolution=desktop
+windowresolution=original
+output=direct3d
+autolock=true
+sensitivity=100
+waitonerror=true
+priority=higher,normal
+pixelshader=none
+usescancodes=false
+overscan=0
+
+[render]
+frameskip=0
+aspect=true
+linewise=false
+char9=false
+doublescan=false
+scaler=none
+autofit=true
+
+[glide]
+glide=true
+lfb=full
+splash=false
+
+[dosbox]
+language=
+machine=svga_s3
+vmemsize=8
+vmemsizekb=0
+captures=capture
+mainline compatible mapping=true
+mainline compatible bios mapping=true
+adapter rom is ram=false
+shell environment size=0
+private area size=32768
+a20=fast
+isa bus clock=std8.3
+pci bus clock=std33.3
+rom bios allocation max=0
+rom bios minimum size=0
+memsize=16
+memsizekb=0
+dos mem limit=0
+isa memory hole at 512kb=false
+memalias=0
+vga bios size override=0
+video bios dont duplicate cga first half rom font=false
+video bios always offer 14-pixel high rom font=true
+video bios always offer 16-pixel high rom font=true
+video bios enable cga second half rom font=true
+forcerate=
+sierra ramdac=true
+sierra ramdac lock 565=false
+page flip debug line=false
+vertical retrace poll debug line=false
+cgasnow=true
+allow port 92 reset=true
+enable port 92=true
+enable 1st dma controller=true
+enable 2nd dma controller=true
+allow dma address decrement=true
+enable dma extra page registers=true
+dma page registers write-only=false
+enable slave pic=true
+enable pc nmi mask=true
+rom bios 8x8 CGA font=true
+rom bios video parameter table=true
+allow more than 640kb base memory=false
+vesa lfb base scanline adjust=0
+allow hpel effects=false
+allow hretrace effects=false
+hretrace effect weight=4.00
+vesa vbe 1.2 modes are 32bpp=true
+allow low resolution vesa modes=true
+allow 32bpp vesa modes=true
+allow 24bpp vesa modes=true
+allow 16bpp vesa modes=true
+allow 15bpp vesa modes=true
+allow 8bpp vesa modes=true
+allow 4bpp vesa modes=true
+allow tty vesa modes=true
+enable vga resize delay=false
+resize only on vga active display width increase=false
+enable pci bus=true
+pit hack=
+
+[vsync]
+vsyncmode=off
+vsyncrate=75
+
+[cpu]
+core=auto
+enable msr=true
+ignore undefined msr=false
+dynamic core cache block size=32
+cputype=auto
+cycles=auto
+cycleup=10
+cycledown=20
+non-recursive page fault=false
+ignore opcode 63=true
+apmbios=false
+apmbios allow realmode=true
+apmbios allow 16-bit protected mode=true
+apmbios allow 32-bit protected mode=true
+integration device=false
+isapnpbios=false
+realbig16=false
+
+[keyboard]
+aux=false
+allow output port reset=true
+auxdevice=intellimouse
+
+[pci]
+voodoo=opengl
+voodoomem=max
+
+[mixer]
+nosound=false
+swapstereo=false
+rate=44100
+blocksize=1024
+prebuffer=20
+
+[sblaster]
+sbtype=sb16
+sbbase=220
+irq=7
+dma=1
+hdma=5
+sbmixer=true
+oplmode=auto
+adlib force timer overflow on detect=true
+oplemu=default
+oplrate=44100
+hardwarebase=220
+force dsp auto-init=false
+force goldplay=false
+goldplay=false
+goldplay stereo=true
+dsp require interrupt acknowledge=auto
+dsp write busy delay=-1
+blaster environment variable=true
+sample rate limits=true
+instant direct dac=false
+stereo control with sbpro only=true
+dsp busy cycle rate=-1
+dsp busy cycle duty=-1
+io port aliasing=true
+
+[speaker]
+pcspeaker=true
+pcrate=44100
+tandy=auto
+tandyrate=44100
+disney=false
+ps1audio=off
+ps1audiorate=22050
+
+[joystick]
+joysticktype=auto
+timed=true
+autofire=false
+swap34=false
+buttonwrap=false
+
+[dos]
+xms=true
+enable a20 on windows init=true
+zero memory on xms memory allocation=false
+ems=true
+zero memory on ems memory allocation=false
+ems system handle memory size=384
+umb=true
+umb start=0
+umb end=0
+kernel allocation in umb=false
+dynamic kernel allocation=false
+keep umb on boot=false
+keep private area on boot=false
+private area in umb=true
+automount=true
+int33=true
+int 13 extensions=true
+biosps2=true
+int15 mouse callback does not preserve registers=false
+keyboardlayout=auto
+dbcs=true
+filenamechar=true
+collating and uppercase=true
+files=127
+con device use int 16h to detect keyboard input=true
+zero memory on int 21h memory allocation=false
+
+[autoexec]
+@echo off
+cls
+mount c "."
+c:
+
+
+########
+# PANELS
+########
+
+:mainmenu
+cls
+type GTADOS\GTASPLSH.ANS
+@choice /c123456 /n [29C Make a choice [1-6]:
+
+if errorlevel 6 goto exit
+if errorlevel 5 goto readme
+if errorlevel 4 goto options
+if errorlevel 3 goto london61
+if errorlevel 2 goto london69
+if errorlevel 1 goto gta1
+
+:gta1
+@echo off
+cls
+type GTADOS\GTASPLS3.ANS
+@echo.
+@choice /c123 /n [29C Make a choice [1-3]:
+
+if errorlevel 3 goto mainmenu
+if errorlevel 2 goto rungta1_fx
+if errorlevel 1 goto rungta1
+
+:london69
+@echo off
+cls
+type GTADOS\GTASPLS1.ANS
+@choice /c123 /n [1;30m[56C Make a choice [1-3]:
+
+if errorlevel 3 goto mainmenu
+if errorlevel 2 goto runlondon69_fx
+if errorlevel 1 goto runlondon69
+
+:london61
+@echo off
+cls
+type GTADOS\GTASPLS2.ANS
+@choice /c123 /n [1;30m[56C Make a choice [1-3]:
+
+if errorlevel 3 goto mainmenu
+if errorlevel 2 goto runlondon61_fx
+if errorlevel 1 goto runlondon61
+
+:options
+@echo off
+cls
+type GTADOS\GTASPLS4.ANS
+@choice /c12345 /n [52C Make a choice [1-5]:
+
+if errorlevel 5 goto mainmenu
+if errorlevel 4 goto setup
+if errorlevel 3 goto delete_player
+if errorlevel 2 goto restore
+if errorlevel 1 goto direct3d
+
+:setup
+@echo off
+cls
+type GTADOS\GTASPLS5.ANS
+@choice /c1234 /n [52C Make a choice [1-4]:
+
+if errorlevel 4 goto mainmenu
+if errorlevel 3 goto runsetup_61
+if errorlevel 2 goto runsetup_69
+if errorlevel 1 goto runsetup_gta
+
+:readme
+GTADOS\LIST README.TXT
+goto mainmenu
+
+
+#################
+# RUN EXECUTABLES
+#################
+
+:rungta1
+@echo off
+cls
+imgmount d ".\MUSIC\GTA\CDAUDIO.DAT" -t cdrom -fs iso
+CD GTADOS
+GTA24.EXE
+exit
+
+:rungta1_fx
+@echo off
+cls
+imgmount d ".\MUSIC\GTA\CDAUDIO.DAT" -t cdrom -fs iso
+CD GTADOS
+GTAFX.EXE
+exit
+
+:runlondon69
+@echo off
+cls
+imgmount d ".\MUSIC\LONDON\CDAUDIO.DAT" -t cdrom -fs iso
+CD GTADOS
+del DUMP*.TGA
+GTA24_UK.EXE
+del DUMP*.TGA
+exit
+
+:runlondon69_fx
+@echo off
+cls
+imgmount d ".\MUSIC\LONDON\CDAUDIO.DAT" -t cdrom -fs iso
+CD GTADOS
+GTAFX_UK.EXE
+exit
+
+:runlondon61
+@echo off
+cls
+imgmount d ".\MUSIC\LONDON\CDAUDIO.DAT" -t cdrom -fs iso
+CD GTADOS
+GTA24_61.EXE
+exit
+
+:runlondon61_fx
+@echo off
+cls
+imgmount d ".\MUSIC\LONDON\CDAUDIO.DAT" -t cdrom -fs iso
+CD GTADOS
+GTAFX_61.EXE
+exit
+
+:runsetup_gta
+@echo off
+imgmount d ".\MUSIC\GTA\CDAUDIO.DAT" -t cdrom -fs iso
+cd gtados
+k
+call dino.bat
+cd ..
+imgmount -u d
+goto mainmenu
+
+:runsetup_69
+@echo off
+imgmount d ".\MUSIC\LONDON\CDAUDIO.DAT" -t cdrom -fs iso
+cd gtados
+k_uk
+call dino.bat
+cd ..
+imgmount -u d
+goto mainmenu
+
+:runsetup_61
+@echo off
+imgmount d ".\MUSIC\LONDON\CDAUDIO.DAT" -t cdrom -fs iso
+cd gtados
+k_61
+call dino.bat
+cd ..
+imgmount -u d
+goto mainmenu
+
+
+#########
+# OPTIONS
+#########
+
+:direct3d
+@echo off
+cls
+type GTADOS\GTASPLS6.ANS
+@ECHO [0m
+COPY GTADOS\DIRECT3D.CON dosbox~1.con /V
+cls
+type GTADOS\GTASPLS6.ANS
+@ECHO [0m
+@ECHO Dosbox has been set to Direct3D and must be restarted. Press a key to exit.
+@ECHO.
+pause
+exit
+
+:restore
+@echo off
+cls
+type GTADOS\GTASPLS6.ANS
+@ECHO [0m
+COPY GTADOS\DEFAULT.CON dosbox~1.con /V
+cls
+type GTADOS\GTASPLS6.ANS
+@ECHO [0m
+@ECHO Dosbox .conf has been restored and must be restarted. Press a key to exit.
+@ECHO.
+pause
+exit
+
+:delete_player
+@echo off
+cls
+type GTADOS\GTASPLS6.ANS
+@ECHO.
+@ECHO [0m[1;33mDeleting these files will let you change the ingame resolution if it crashes
+@CHOICE but will also erase the scores! Are you sure you want to proceed?[0m
+if errorlevel 2 goto options
+if errorlevel 1 goto continue
+:continue
+DEL GTADATA\PLAYER_A.DAT
+DEL GTADATA\UK\PLAYER_A.DAT
+DEL GTADATA\UK\PLAYER_E.DAT
+cls
+type GTADOS\GTASPLS6.ANS
+@ECHO.
+@ECHO [0mDon't forget to press [1;33mF11 [0mingame to set the desired resolution.
+@ECHO The game will look distorted but you'll be able to set the proper resolution.
+pause
+goto mainmenu
+
+
+######
+# EXIT
+######
+
+:exit
+exit

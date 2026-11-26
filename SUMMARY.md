@@ -40,9 +40,10 @@ Nothing in this directory depends on ReRun being installed.
 
 ## What was created in this directory
 
-- `link.sh` - links the two game folders here as `gta-max` and `gta-classic` (symlinks).
+- `gta-max`, `gta-classic` - the two game folders. They started as symlinks made by a `link.sh`
+  script; that script was removed, the folders are meant to be real directories here.
 - `install.sh` - installs Rosetta 2, DOSBox Staging (`brew install dosbox-staging`) and Wine
-  (`brew install --cask wine-stable`), skipping what is already present, then runs `link.sh`.
+  (`brew install --cask wine-stable`), skipping what is already present.
   **Written but not run** - installing software from my side was blocked. Wine and Rosetta are
   already on this Mac, so in practice it only adds DOSBox.
 - `_wine.sh` - engine for the Windows builds (details below).
@@ -152,7 +153,7 @@ of game ticks per second (`maxgameticks` in `ddraw.ini`); lower = slower.
    of **that terminal**.
 2. **Start the game** - any `win ...` command. The launcher writes `GTA_SPEED` into `ddraw.ini`
    (through `speed.sh`), prints the display mode and the speed that will be used and
-   **waits for Enter**. Ctrl+C at that point stops it, so you can run `xx speed` again and
+   **waits for Enter**. Esc (or Ctrl+C) at that point stops it, so you can run `xx speed` again and
    start the same command once more.
 
 - When `GTA_SPEED` is not set the launcher keeps whatever is already in `ddraw.ini`
@@ -203,7 +204,7 @@ of game ticks per second (`maxgameticks` in `ddraw.ini`); lower = slower.
 4. `dos ... 24bit` - the default mode of the DOS builds
 5. `dos ... 8bit` - needs the VESA driver path to behave in DOSBox
 6. `dos ... 3dfx` - needs Voodoo emulation
-7. `install`, `link`, `help`
+7. `install`, `help`
 
 ## Side effects outside this directory
 

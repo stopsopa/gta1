@@ -29,7 +29,7 @@
 #     ddraw.ini according to --window
 #   - game speed: when env var GTA_SPEED is set (xx speed <value>), writes it
 #     to ddraw.ini through speed.sh. Then shows the speed that will be used and
-#     waits for Enter (Ctrl+C stops, so the value can be changed and the
+#     waits for Enter (Esc or Ctrl+C stops, so the value can be changed and the
 #     launcher started again). No waiting when not run from a terminal.
 #     ddraw.ini is only created when missing.
 #
@@ -98,7 +98,7 @@ if [[ -z "${GAME_DIR}" || -z "${EXE}" ]]; then
 fi
 
 if [[ ! -d "${GAME_DIR}/" ]]; then
-  echo "${0} error: game folder not found GAME_DIR=>${GAME_DIR}<, run first: /bin/bash ${_DIR}/link.sh"
+  echo "${0} error: game folder not found GAME_DIR=>${GAME_DIR}<, the game folder gta-classic is expected in ${_DIR}"
   exit 1
 fi
 
@@ -267,7 +267,7 @@ display    : ${MODE_HUMAN}
 game speed : ${SPEED_HUMAN}
              (${SPEED_FROM})
 
-to change  : stop here with Ctrl+C, then
+to change  : stop here with Esc (or Ctrl+C), then
                xx speed 25        (try 60 / 30 / 25 / 20 / 15, lower = slower)
                xx display window  (or: xx display fullscreen)
              and start this command again
@@ -276,7 +276,26 @@ EEE
 # wait for confirmation only when a human is at the keyboard
 if [[ -t 0 ]]; then
   echo ""
-  read -r -p "Press Enter to start the game (Ctrl+C to stop)... "
+  printf "Press Enter to start the game (Esc or Ctrl+C to stop)... "
+  # one key at a time, without waiting for Enter: Enter starts, Esc stops, other keys are ignored
+  while true; do
+    KEY=""
+    if ! IFS= read -r -s -n 1 KEY; then
+      # end of input (Ctrl+D)
+      echo ""
+      echo "${0}: stopped, the game was not started"
+      exit 0
+    fi
+    if [[ -z "${KEY}" ]]; then
+      echo ""
+      break
+    fi
+    if [[ "${KEY}" = $'\033' ]]; then
+      echo ""
+      echo "${0}: stopped with Esc, the game was not started"
+      exit 0
+    fi
+  done
 fi
 
 # ---- run ------------------------------------------------------------------

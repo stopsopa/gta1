@@ -1,0 +1,7 @@
+[ddraw]
+windowed=true
+fullscreen=true
+maintas=true
+renderer=opengl
+singlecpu=false
+adjmouse=true
