@@ -15,8 +15,8 @@
 # Without --window the mode comes from env var GTA_DISPLAY (window | fullscreen,
 # set with "xx display"), and is full screen when that is not set either.
 #
-# Needs Wine in PATH (brew install --cask wine-stable). Other binary can be
-# forced with env var WINE_BIN.
+# Needs Wine (xx install, or by hand: brew install --cask wine-stable). It is
+# searched by _wine_find.sh, other binary can be forced with env var WINE_BIN.
 #
 # What it does before starting the game:
 #   - uses its own Wine prefix in .wine-prefix next to this script
@@ -110,24 +110,8 @@ fi
 
 # ---- find Wine ------------------------------------------------------------
 
-if [[ -z "${WINE_BIN}" ]]; then
-  WINE_BIN="$(command -v wine)"
-fi
-
-if [[ -z "${WINE_BIN}" || ! -x "${WINE_BIN}" ]]; then
-  cat <<EEE
-
-${0} error: Wine not found WINE_BIN=>${WINE_BIN}<
-
-Install it (on this Mac, any terminal):
-
-  brew install --cask wine-stable
-
-or point env var WINE_BIN to an existing wine binary.
-
-EEE
-  exit 1
-fi
+# search + full install instructions when missing: _wine_find.sh
+WINE_BIN="$(/bin/bash "${_DIR}/_wine_find.sh")" || exit 1
 
 if [[ -z "${WINEPREFIX}" ]]; then
   WINEPREFIX="${_DIR}/.wine-prefix"

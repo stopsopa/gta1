@@ -44,8 +44,9 @@ Nothing in this directory depends on ReRun being installed.
   script; that script was removed, the folders are meant to be real directories here.
 - `install.sh` - installs Rosetta 2, DOSBox Staging (`brew install dosbox-staging`) and Wine
   (`brew install --cask wine-stable`), skipping what is already present.
-  **Written but not run** - installing software from my side was blocked. Wine and Rosetta are
-  already on this Mac, so in practice it only adds DOSBox.
+  Needs Homebrew, prints how to install it when it is missing.
+- `_wine_find.sh` - finds the Wine binary for the launchers and for `install.sh`; when Wine is
+  missing it prints what exactly is missing on the machine and how to install it.
 - `_wine.sh` - engine for the Windows builds (details below).
 - `_dosbox.sh` - engine for the DOS builds (details below).
 - `win-classic-gta1.sh`, `win-classic-london69.sh` - Windows builds.

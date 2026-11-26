@@ -40,18 +40,12 @@ esac
 _PWD="$(pwd)"
 
 if [[ ! -f "${_DIR}/gta-max/Grand Theft Auto.exe" ]]; then
-  echo "${0} error: MAX pack not found GAME=>${_DIR}/gta-max/Grand Theft Auto.exe<, run first: /bin/bash ${_DIR}/link.sh"
+  echo "${0} error: MAX pack not found GAME=>${_DIR}/gta-max/Grand Theft Auto.exe<, the MAX pack folder gta-max is expected in ${_DIR} (after git clone run: xx unpack)"
   exit 1
 fi
 
-if [[ -z "${WINE_BIN}" ]]; then
-  WINE_BIN="$(command -v wine)"
-fi
-
-if [[ -z "${WINE_BIN}" || ! -x "${WINE_BIN}" ]]; then
-  echo "${0} error: Wine not found WINE_BIN=>${WINE_BIN}<, run first: /bin/bash ${_DIR}/install.sh"
-  exit 1
-fi
+# search + full install instructions when missing: _wine_find.sh
+WINE_BIN="$(/bin/bash "${_DIR}/_wine_find.sh")" || exit 1
 
 if [[ -z "${WINEPREFIX}" ]]; then
   WINEPREFIX="${_DIR}/.wine-prefix"
