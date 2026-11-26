@@ -3,7 +3,7 @@
 # Installs everything the launchers in this directory need (on this Mac):
 #   - Rosetta 2        (Wine and the Windows builds of GTA are Intel code)
 #   - DOSBox Staging   (dos-*.sh launchers)       brew formula dosbox-staging
-#   - Wine             (win-*.sh, max-wine-*.sh)  _wine_install.sh (direct download,
+#   - Wine             (win-*.sh, max-wine-*.sh)  wine_install.sh (direct download,
 #                      the brew cask wine-stable is disabled since 2026-09-01)
 #
 # Needs Homebrew (https://brew.sh) - it is the only thing this script does not
@@ -12,7 +12,7 @@
 # Safe to run again - things already installed are skipped.
 #
 # Usage (from any directory):
-#   /bin/bash install.sh        (the same as: xx install)
+#   /bin/bash install/install.sh        (the same as: xx install)
 #
 
 _SHELL="$(ps -p $$ -o comm=)"; # bash || sh || zsh
@@ -106,27 +106,27 @@ fi
 
 # ---- Wine -----------------------------------------------------------------
 
-WINE_FOUND="$(/bin/bash "${_DIR}/_wine_find.sh" --quiet)"
+WINE_FOUND="$(/bin/bash "${_DIR}/wine_find.sh" --quiet)"
 
 if [[ -n "${WINE_FOUND}" ]]; then
   echo "${GREEN}ok${RESET}       Wine (${WINE_FOUND})"
 else
   echo "${YELLOW}install${RESET}  Wine"
-  # not with brew: cask wine-stable is disabled since 2026-09-01, see _wine_install.sh
-  /bin/bash "${_DIR}/_wine_install.sh"
+  # not with brew: cask wine-stable is disabled since 2026-09-01, see wine_install.sh
+  /bin/bash "${_DIR}/wine_install.sh"
   CODE="${?}"
   if [[ "${CODE}" != "0" ]]; then
-    echo "${0} error: _wine_install.sh failed CODE=>${CODE}<"
+    echo "${0} error: wine_install.sh failed CODE=>${CODE}<"
     exit 1
   fi
   # prints the full instructions and stops when it is still not there
-  WINE_FOUND="$(/bin/bash "${_DIR}/_wine_find.sh")" || exit 1
+  WINE_FOUND="$(/bin/bash "${_DIR}/wine_find.sh")" || exit 1
 fi
 
 cat <<EEE
 
 ${GREEN}all installed${RESET} - launchers:
 
-$(cd "${_DIR}" && ls dos-*.sh win-*.sh max-wine-*.sh 2>/dev/null | sed 's/^/  \/bin\/bash /')
+$(cd "${_DIR}/.." && ls dos-*.sh win-*.sh max-wine-*.sh 2>/dev/null | sed 's/^/  \/bin\/bash /')
 
 EEE

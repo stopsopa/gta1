@@ -15,8 +15,8 @@
 # Without --window the mode comes from env var GTA_DISPLAY (window | fullscreen,
 # set with "xx display"), and is full screen when that is not set either.
 #
-# Needs Wine (xx install, or only Wine: /bin/bash _wine_install.sh). It is
-# searched by _wine_find.sh, other binary can be forced with env var WINE_BIN.
+# Needs Wine (xx install, or only Wine: /bin/bash install/wine_install.sh). It is
+# searched by install/wine_find.sh, other binary can be forced with env var WINE_BIN.
 #
 # What it does before starting the game:
 #   - uses its own Wine prefix in .wine-prefix next to this script
@@ -110,8 +110,8 @@ fi
 
 # ---- find Wine ------------------------------------------------------------
 
-# search + full install instructions when missing: _wine_find.sh
-WINE_BIN="$(/bin/bash "${_DIR}/_wine_find.sh")" || exit 1
+# search + full install instructions when missing: install/wine_find.sh
+WINE_BIN="$(/bin/bash "${_DIR}/install/wine_find.sh")" || exit 1
 
 if [[ -z "${WINEPREFIX}" ]]; then
   WINEPREFIX="${_DIR}/.wine-prefix"

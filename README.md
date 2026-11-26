@@ -49,7 +49,7 @@ xx --version
 ```sh
 cd /path/to/this/repository
 xx unpack     # glues the CD images back together (they are stored in git in chunks)
-xx install    # installs Rosetta, DOSBox Staging and Wine with brew, skips what is present
+xx install    # installs Rosetta, DOSBox Staging and Wine (needs Homebrew), skips what is present
 ```
 
 ## 3. Play

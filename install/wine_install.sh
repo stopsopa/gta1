@@ -15,11 +15,11 @@
 #     /Applications is not writable)
 #   - removes the quarantine flag, so macOS does not block the unsigned app
 #
-# No symlink in PATH is created - _wine_find.sh knows where the app is.
+# No symlink in PATH is created - wine_find.sh knows where the app is.
 # Safe to run again - does nothing when the app is already there.
 #
 # Usage (from any directory):
-#   /bin/bash _wine_install.sh
+#   /bin/bash install/wine_install.sh
 #
 # Other build can be forced with env vars WINE_URL and WINE_SHA256.
 #

@@ -44,8 +44,8 @@ if [[ ! -f "${_DIR}/gta-max/Grand Theft Auto.exe" ]]; then
   exit 1
 fi
 
-# search + full install instructions when missing: _wine_find.sh
-WINE_BIN="$(/bin/bash "${_DIR}/_wine_find.sh")" || exit 1
+# search + full install instructions when missing: install/wine_find.sh
+WINE_BIN="$(/bin/bash "${_DIR}/install/wine_find.sh")" || exit 1
 
 if [[ -z "${WINEPREFIX}" ]]; then
   WINEPREFIX="${_DIR}/.wine-prefix"

@@ -359,9 +359,9 @@ set -e
     [`install`]: {
       command: `
 set -e
-/bin/bash install.sh
+/bin/bash install/install.sh
 `,
-      description: `install Rosetta, DOSBox Staging and Wine with brew (skips what is present), [install.sh]`,
+      description: `install Rosetta, DOSBox Staging and Wine (skips what is present), needs Homebrew  [install/install.sh]`,
     },
     [`pack`]: {
       command: `

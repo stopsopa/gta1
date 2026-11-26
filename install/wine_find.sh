@@ -8,8 +8,8 @@
 # When Wine is not found: prints what to install to stderr and exits with 1.
 #
 # Usage:
-#   WINE_BIN="$(/bin/bash "${_DIR}/_wine_find.sh")" || exit 1
-#   /bin/bash _wine_find.sh --quiet     same, but no help on stderr (install.sh uses it as a test)
+#   WINE_BIN="$(/bin/bash "${_DIR}/wine_find.sh")" || exit 1
+#   /bin/bash install/wine_find.sh --quiet     same, but no help on stderr (install.sh uses it as a test)
 #
 # Search order:
 #   1. env var WINE_BIN (when set, nothing else is tried)
@@ -17,7 +17,7 @@
 #   3. places where Homebrew used to put it (machines that installed it before
 #      the cask was disabled)
 #   4. "Wine Stable.app" in /Applications and ~/Applications - where
-#      _wine_install.sh puts it (it creates no symlink in PATH)
+#      wine_install.sh puts it (it creates no symlink in PATH)
 #
 
 _SHELL="$(ps -p $$ -o comm=)"; # bash || sh || zsh
@@ -135,10 +135,10 @@ By hand, in this order (skip what is marked "found" above):
      disabled that cask on 2026-09-01 (build not signed, fails Gatekeeper).
      This downloads the same build straight from its source, checks the
      sha256 and puts "Wine Stable.app" in /Applications:
-       /bin/bash "${_DIR}/_wine_install.sh"
+       /bin/bash "${_DIR}/wine_install.sh"
 
   4. check, it should print the path of wine:
-       /bin/bash "${_DIR}/_wine_find.sh"
+       /bin/bash "${_DIR}/wine_find.sh"
 
 If macOS refuses to open Wine ("cannot be opened" / "unverified developer"):
 System Settings -> Privacy & Security -> "Open Anyway", then run the launcher again.
