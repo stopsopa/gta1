@@ -64,62 +64,62 @@ The menu opens:
 
 ```
 ? Select command to run
-❯ █   1 - speed
-  ▋   2 - display
-  ▍   3 - win gta1 800x600+
-  ▎   4 - win london69 800x600+
-  ▏   5 - win gta1 window 800x600+
-  ▏   6 - win london69 window 800x600+
-  ▏   7 - max wine menu
-  ▏   8 - dos max gta1 24bit 800x600
-  ▏   9 - dos classic gta1 24bit 800x600
-  ▏  10 - dos max london69 24bit 800x600
-  ▏  11 - dos max london61 24bit 800x600
-  ▏  12 - dos classic london69 24bit 800x600
-  ▏  13 - dos max gta1 8bit 640x480
-  ▏  14 - dos classic gta1 8bit 640x480
-  ▏  15 - dos max london69 8bit 640x480
-  ▏  16 - dos classic london69 8bit 640x480
-  ▏  17 - dos max london61 8bit 640x480
-  ▏  18 - dos max gta1 3dfx 640x480
-  ▏  19 - dos classic gta1 3dfx 640x480
-  ▏  20 - dos max london69 3dfx 640x480
-  ▏  21 - dos classic london69 3dfx 640x480
-  ▏  22 - dos max london61 3dfx 640x480
-  ▎  23 - install
-  ▍  24 - pack
-  ▋  25 - unpack
-  █  26 - help
+❯ █   1 - help
+  ▋   2 - speed
+  ▍   3 - display
+  ▎   4 - win gta1 800x600+
+  ▏   5 - win london69 800x600+
+  ▏   6 - win gta1 window 800x600+
+  ▏   7 - win london69 window 800x600+
+  ▏   8 - max wine menu
+  ▏   9 - dos max gta1 24bit 800x600
+  ▏  10 - dos classic gta1 24bit 800x600
+  ▏  11 - dos max london69 24bit 800x600
+  ▏  12 - dos max london61 24bit 800x600
+  ▏  13 - dos classic london69 24bit 800x600
+  ▏  14 - dos max gta1 8bit 640x480
+  ▏  15 - dos classic gta1 8bit 640x480
+  ▏  16 - dos max london69 8bit 640x480
+  ▏  17 - dos classic london69 8bit 640x480
+  ▏  18 - dos max london61 8bit 640x480
+  ▏  19 - dos max gta1 3dfx 640x480
+  ▏  20 - dos classic gta1 3dfx 640x480
+  ▏  21 - dos max london69 3dfx 640x480
+  ▏  22 - dos classic london69 3dfx 640x480
+  ▎  23 - dos max london61 3dfx 640x480
+  ▍  24 - install
+  ▋  25 - pack
+  █  26 - unpack
 
-STEP 1: choose game speed for this terminal (sets env var GTA_SPEED). No arg = arrow-key menu. Or pass …
+what is in this directory
 ↑↓ navigate • ⏎ select • type to filter • esc exit
 ```
 
 - `↑` `↓` move, `Enter` runs the selected row, `Esc` closes the menu.
-- Typing filters the rows, by name or by number (type `london`, or `3`).
+- Typing filters the rows, by name or by number (type `london`, or `4`).
 - The line under the list describes the selected row.
 
-Without the menu: `xx 3` or `xx "win gta1 800x600+"` runs the row directly.
+Without the menu: `xx 4` or `xx "win gta1 800x600+"` runs the row directly.
 
 ### Which row to pick
 
-Games are ordered from the highest chance to work to the lowest. Start with row 3:
+Games are ordered from the highest chance to work to the lowest. Start with row 4:
 
 | Rows | What it is |
 | --- | --- |
-| `win ...` (3 - 6) | Windows build of the game through Wine. The one confirmed to work. |
-| `max wine menu` (7) | menu of the MAX pack (GTA1 / London 1969 / London 1961) in its own DOSBox through Wine |
-| `dos ...` (8 - 22) | DOS builds in native DOSBox, untested. All accept `--window`, e.g. `xx 8 --window` |
-| `help` (26) | short description of this directory and link to the repository |
+| `help` (1) | short description of this directory and link to the repository |
+| `win ...` (4 - 7) | Windows build of the game through Wine. The one confirmed to work. |
+| `max wine menu` (8) | menu of the MAX pack (GTA1 / London 1969 / London 1961) in its own DOSBox through Wine |
+| `dos ...` (9 - 23) | DOS builds in native DOSBox, untested. All accept `--window`, e.g. `xx 9 --window` |
 
-### Speed and display (rows 1 and 2)
+### Speed and display (rows 2 and 3)
 
 These two don't start anything. They set a value for the current terminal, which is used by the game started **later in the same terminal**:
 
 ```sh
 xx speed      # choose the speed of the game
 xx display    # choose window or full screen
-xx 3          # start the game with these settings
+xx 4          # start the game with these settings
 ```
 
 Each of them lists, above its own menu, which rows it affects. In short:

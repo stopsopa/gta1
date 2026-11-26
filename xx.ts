@@ -64,6 +64,31 @@ type Ctx = {
 export default (setup: Commands, ctx: Ctx): Commands => {
   // games first, ordered from the highest chance to work to the lowest
   return {
+    help: {
+      command: `
+set -e
+
+cat <<EEE
+
+  🐙 GitHub: $(git ls-remote --get-url origin | awk '{\$1=\$1};1' | tr -d '\\n' | sed -E 's/git@github\\.com:([^/]+)\\/(.+)\\.git/https:\\/\\/github.com\\/\\1\\/\\2/g')
+
+  GTA1 / GTA London launchers for this Mac - details in SUMMARY.md
+
+  game folders (next to this file):
+    gta-max      MAX pack: DOS builds of GTA1, London 1969, London 1961
+    gta-classic  classic release: DOS + Windows builds of GTA1, London 1969
+
+  win ...        Windows build through Wine (cnc-ddraw for graphics)
+  dos ...        DOS build in native DOSBox (xx install first)
+  max wine menu  the pack's bundled Windows DOSBox through Wine
+
+  display of the Windows build: gta-classic/games/GTA/GTA/gtawin/ddraw.ini
+  Wine prefix:                  .wine-prefix (delete it to start clean)
+
+EEE
+`,
+      description: `what is in this directory`,
+    },
     [`speed`]: {
       command: `
 # sourced in your shell (source: true), so no "exit" and no "set -e" here
@@ -351,31 +376,6 @@ set -e
 /bin/bash pack.sh unpack "\${@}"
 `,
       description: `Run after git clone / pull, before playing. Glues [file].001 [file].002 ... back into [file], the chunks stay. Arg: --delete removes the chunks (git then sees them as deleted: xx pack before the next commit)  [pack.sh unpack]`,
-    },
-    help: {
-      command: `
-set -e
-
-cat <<EEE
-
-  🐙 GitHub: $(git ls-remote --get-url origin | awk '{\$1=\$1};1' | tr -d '\\n' | sed -E 's/git@github\\.com:([^/]+)\\/(.+)\\.git/https:\\/\\/github.com\\/\\1\\/\\2/g')
-
-  GTA1 / GTA London launchers for this Mac - details in SUMMARY.md
-
-  game folders (next to this file):
-    gta-max      MAX pack: DOS builds of GTA1, London 1969, London 1961
-    gta-classic  classic release: DOS + Windows builds of GTA1, London 1969
-
-  win ...        Windows build through Wine (cnc-ddraw for graphics)
-  dos ...        DOS build in native DOSBox (xx install first)
-  max wine menu  the pack's bundled Windows DOSBox through Wine
-
-  display of the Windows build: gta-classic/games/GTA/GTA/gtawin/ddraw.ini
-  Wine prefix:                  .wine-prefix (delete it to start clean)
-
-EEE
-`,
-      description: `what is in this directory`,
     },
     ...setup,
   };
