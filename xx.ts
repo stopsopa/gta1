@@ -141,6 +141,18 @@ EEE
 # sourced in your shell (source: true), so no "exit" and no "set -e" here
 __GTA_ARG="\${1}"
 if [ -z "\${__GTA_ARG}" ]; then
+  cat <<EEE
+
+  Display is used ONLY by these two Windows builds (Wine + cnc-ddraw):
+    win gta1 800x600+
+    win london69 800x600+
+
+  NOT affected (they ignore GTA_DISPLAY):
+    win gta1 window 800x600+      always window
+    win london69 window 800x600+  always window
+    max wine menu
+    dos ...   (all DOSBox commands: 24bit, 8bit, 3dfx) - full screen, pass --window for a window
+EEE
   # arrow-key menu, runs in its own bash process and prints the chosen value
   __GTA_ARG="\$(/bin/bash _menu.sh "Display of the Windows builds  (now: GTA_DISPLAY=>\${GTA_DISPLAY}<)" "\${GTA_DISPLAY}" \\
     "window::window      - normal macOS window: movable, resizable, mouse stays free" \\
